@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chambers Drinking Game - Play</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: #f9f9f9;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      background-color: #ff4d6d;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #e60040;
+    }
+
+    .card-container {
+      perspective: 1000px;
+      width: 320px;
+      height: 400px;
+      margin: 40px auto;
+      position: relative;
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 1s;
+      transform-style: preserve-3d;
+    }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-side {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-front {
+      background: url('images/backside.jpg') center/cover no-repeat;
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-back img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+    }
+
+    pre {
+      font-size: 1.3em;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="modeTitle">Game Mode:</h1>
+  <button onclick="drawCard()">Draw Card</button>
+  <div id="result"></div>
+
+  <script>
+    // Map card text to image filenames
+    const cardImageMap = {
+      "Still in love with your ex? Finish your drink.": "images/still_in_love_with_your_ex_finish_your_drink.jpg"
+      // Add more mappings as needed
+    };
+
+    // Get mode from query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get("mode") || "party";
+    document.getElementById("modeTitle").textContent = "Game Mode: " + mode;
+
+    async function drawCard() {
+      try {
+        const response = await fetch("https://party-card-game.onrender.com/api/draw-card", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode })
+        });
+        const data = await response.json();
+        const cardText = data.card;
+        const imagePath = cardImageMap[cardText];
+        const resultElement = document.getElementById("result");
+        resultElement.innerHTML = "";
+
+        if (imagePath) {
+          resultElement.innerHTML = `
+            <div class="card-container">
+              <div class="card" id="flipCard">
+                <div class="card-side card-front"></div>
+                <div class="card-side card-back">
+                  <img src="${imagePath}" alt="${cardText}">
+                </div>
+              </div>
+            </div>
+          `;
+          setTimeout(() => {
+            document.getElementById("flipCard").classList.add("flipped");
+          }, 600);
+        } else {
+          resultElement.innerHTML = `<pre>${cardText}</pre>`;
+        }
+      } catch (error) {
+        console.error("Error fetching card:", error);
+        document.getElementById("result").textContent = "Error: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
