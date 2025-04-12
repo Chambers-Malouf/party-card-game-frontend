@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Party Card Game</title>
   <style>
     body {
@@ -9,13 +10,11 @@
       padding: 40px;
       background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
     }
-
     h1 {
       font-size: 2.5em;
       color: #333;
       margin-bottom: 20px;
     }
-
     button {
       padding: 12px 24px;
       font-size: 1.2em;
@@ -26,22 +25,20 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-
     button:hover {
       background-color: #e60040;
     }
-
     #result {
       margin-top: 40px;
     }
-
     img.card {
       max-width: 320px;
       width: 90%;
       border-radius: 16px;
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+      display: block;
+      margin: 0 auto;
     }
-
     pre {
       font-size: 1.3em;
       color: #333;
@@ -51,43 +48,56 @@
 <body>
   <h1>Party Card Game</h1>
   <label for="mode">Choose a mode:</label>
-<select id="mode">
-  <option value="party">Party</option>
-  <option value="drinking">Drinking</option>
-  <option value="chill">Chill</option>
-  <option value="nsfw">NSFW</option>
-</select>
-
-<br><br>
+  <select id="mode">
+    <option value="party">Party</option>
+    <option value="drinking">Drinking</option>
+    <option value="chill">Chill</option>
+    <option value="nsfw">NSFW</option>
+  </select>
+  <br><br>
   <button onclick="drawCard()">Draw Card</button>
   <div id="result"></div>
-
+  
   <script>
+    // This mapping connects a specific card text to the image file.
     const cardImageMap = {
-  "Still in love with your ex? Finish your drink.": "images/still_in_love_with_your_ex_finish_your_drink.png"
-};
-
+      "Still in love with your ex? Finish your drink.": "images/still_in_love_with_your_ex_finish_your_drink.jpg"
+    };
 
     async function drawCard() {
       const mode = document.getElementById("mode").value;
-      const response = await fetch("https://party-card-game.onrender.com/api/draw-card", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-      body: JSON.stringify({ mode })
-    });
+      try {
+        // Fetch the card from the backend
+        const response = await fetch("https://party-card-game.onrender.com/api/draw-card", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ mode })
+        });
+        const data = await response.json();
 
+        // Extract the card text from the response
+        const cardText = data.card;
+        console.log("Returned card text:", cardText);
 
-      const data = await response.json();
-      const cardText = data.card;
+        // Look up the image path in the map based on the card text
+        const imagePath = cardImageMap[cardText];
 
-      const imagePath = cardImageMap[cardText];
-      const resultElement = document.getElementById('result');
+        // Select the result element
+        const resultElement = document.getElementById('result');
+        resultElement.innerHTML = ""; // Clear previous content
 
-      resultElement.innerHTML = imagePath
-        ? `<img class="card" src="${imagePath}" alt="${cardText}">`
-        : `<pre>${cardText}</pre>`;
+        // If there’s a matching image, insert it; otherwise, insert the card text
+        if (imagePath) {
+          resultElement.innerHTML = `<img class="card" src="${imagePath}" alt="${cardText}">`;
+        } else {
+          resultElement.innerHTML = `<pre>${cardText}</pre>`;
+        }
+      } catch (error) {
+        console.error("Error fetching card:", error);
+        document.getElementById("result").textContent = "Error: " + error.message;
+      }
     }
   </script>
 </body>
