@@ -1,89 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Chambers Drinking Game - Home</title>
+  <title>Party Card Game</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      background: linear-gradient(135deg, #38ef7d, #11998e);
       padding: 40px;
-      min-height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      background-color: #1c1c1c;
+      color: #f5f5f5;
     }
     h1 {
-      font-size: 2.5rem;
-      color: #fff;
+      font-size: 2.5em;
+      color: #ffa500;
       margin-bottom: 30px;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
     }
-    .mode-container {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      width: 80%;
-      max-width: 350px;
-      margin: 0 auto;
-    }
-    .mode-button {
-      font-size: 1.2rem;
+    .mode-button, .round-button, .start-button {
+      display: block;
+      width: 250px;
+      margin: 15px auto;
+      padding: 15px 20px;
+      font-size: 1.2em;
       font-weight: bold;
-      color: #fff;
-      background: #ff4d6d;
+      color: #1c1c1c;
+      background-color: #ffa500;
       border: none;
       border-radius: 30px;
-      padding: 14px;
       cursor: pointer;
-      text-align: center;
-      text-transform: uppercase;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: transform 0.2s, box-shadow 0.2s;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
-    .mode-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 12px rgba(0,0,0,0.3);
+    .mode-button:hover, .round-button:hover, .start-button:hover {
+      background-color: #cc8400;
+      transform: scale(1.05);
     }
-    .mode-description {
-      font-size: 0.9rem;
-      color: #eee;
-      margin-top: 5px;
-      text-align: center;
-      opacity: 0.8;
+    .selected {
+      outline: 3px solid #8affc1;
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Chambers Drinking Game</h1>
-  <div class="mode-container">
-    <div>
-      <button class="mode-button" onclick="startGame('party')">Party ...</button>
-      <p class="mode-description">Liven up any gathering with quick laughs and challenges.</p>
-    </div>
-    <div>
-      <button class="mode-button" onclick="startGame('drinking')">Drinking ...</button>
-      <p class="mode-description">Up the ante! Perfect for those who want a lively buzz.</p>
-    </div>
-    <div>
-      <button class="mode-button" onclick="startGame('chill')">Chill ...</button>
-      <p class="mode-description">Relaxed vibes, easy-going questions, minimal pressure.</p>
-    </div>
-    <div>
-      <button class="mode-button" onclick="startGame('nsfw')">NSFW ...</button>
-      <p class="mode-description">Slightly naughty prompts for an adults-only crowd.</p>
-    </div>
+  <h1>Pick Your Mode</h1>
+  <button class="mode-button" onclick="selectMode('party')">Party</button>
+  <button class="mode-button" onclick="selectMode('drinking')">Drinking</button>
+  <button class="mode-button" onclick="selectMode('chill')">Chill</button>
+  <button class="mode-button" onclick="selectMode('nsfw')">NSFW</button>
+
+  <div id="roundSection" class="hidden">
+    <h1>Pick Rounds</h1>
+    <button class="round-button" onclick="selectRounds(10)">10 Cards</button>
+    <button class="round-button" onclick="selectRounds(15)">15 Cards</button>
+    <button class="round-button" onclick="selectRounds(20)">20 Cards</button>
   </div>
 
+  <button id="startButton" class="start-button hidden" onclick="startGame()">Start Game</button>
+
   <script>
-    function startGame(mode) {
-      // Redirect to game.html with the selected mode as a query parameter
-      window.location.href = "game.html?mode=" + encodeURIComponent(mode);
+    let selectedMode = null;
+    let selectedRounds = null;
+
+    function selectMode(mode) {
+      selectedMode = mode;
+      document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('selected'));
+      event.target.classList.add('selected');
+      document.getElementById('roundSection').classList.remove('hidden');
+    }
+
+    function selectRounds(rounds) {
+      selectedRounds = rounds;
+      document.querySelectorAll('.round-button').forEach(btn => btn.classList.remove('selected'));
+      event.target.classList.add('selected');
+      document.getElementById('startButton').classList.remove('hidden');
+    }
+
+    function startGame() {
+      if (selectedMode && selectedRounds) {
+        window.location.href = `game.html?mode=${selectedMode}&rounds=${selectedRounds}`;
+      }
     }
   </script>
 </body>
