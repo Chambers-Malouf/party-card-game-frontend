@@ -87,30 +87,62 @@
   <div id="result"></div>
 
   <script>
-    // Map card text to image filenames
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get("mode") || "party";
+    const totalRounds = parseInt(urlParams.get("rounds")) || 10;
+    let currentRound = 0;
+    const usedCards = new Set();
+  
+    document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
+  
     const cardImageMap = {
       "Still in love with your ex? Finish your drink.": "images/still_in_love_with_your_ex_finish_your_drink.jpg"
       // Add more mappings as needed
     };
-
-    // Get mode from query string
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get("mode") || "party";
-    document.getElementById("modeTitle").textContent = "Game Mode: " + mode;
-
+  
     async function drawCard() {
+      if (currentRound >= totalRounds) {
+        document.getElementById("result").innerHTML = `
+          <h2 style="color: #ffa500;">Game Over!</h2>
+          <p>You finished all ${totalRounds} cards.</p>
+          <button onclick="window.location.href='index.html'">Play Again</button>
+        `;
+        return;
+      }
+  
       try {
-        const response = await fetch("https://party-card-game.onrender.com/api/draw-card", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mode })
-        });
-        const data = await response.json();
-        const cardText = data.card;
+        let cardText = null;
+        let maxTries = 10;
+  
+        // Try to get a card that hasn't been used yet
+        while (maxTries-- > 0) {
+          const response = await fetch("https://party-card-game.onrender.com/api/draw-card", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode })
+          });
+          const data = await response.json();
+          if (!data.card) break;
+          if (!usedCards.has(data.card)) {
+            cardText = data.card;
+            usedCards.add(cardText);
+            break;
+          }
+        }
+  
+        // If we ran out of cards, show fallback
+        if (!cardText) {
+          document.getElementById("result").innerHTML = `
+            <p>No more unique cards available for this mode.</p>
+            <button onclick="window.location.href='index.html'">Back to Home</button>
+          `;
+          return;
+        }
+  
         const imagePath = cardImageMap[cardText];
         const resultElement = document.getElementById("result");
         resultElement.innerHTML = "";
-
+  
         if (imagePath) {
           resultElement.innerHTML = `
             <div class="card-container">
@@ -128,6 +160,9 @@
         } else {
           resultElement.innerHTML = `<pre>${cardText}</pre>`;
         }
+  
+        currentRound++;
+        document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
       } catch (error) {
         console.error("Error fetching card:", error);
         document.getElementById("result").textContent = "Error: " + error.message;
