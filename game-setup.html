@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Party Card Game</title>
+  <title>Game Setup - Party Card Game</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -11,38 +11,60 @@
       background-color: #1c1c1c;
       color: #f5f5f5;
     }
-
     h1 {
-      font-size: 2.5em;
+      font-size: 2em;
       color: #ffa500;
-      margin-bottom: 30px;
     }
-
-    .menu-button {
-      display: block;
-      width: 250px;
-      margin: 20px auto;
-      padding: 15px 20px;
+    select {
+      font-size: 1.1em;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
       font-size: 1.2em;
-      font-weight: bold;
-      color: #1c1c1c;
-      background-color: #ffa500;
       border: none;
       border-radius: 30px;
+      background-color: #ffa500;
+      color: #1c1c1c;
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s ease;
     }
-
-    .menu-button:hover {
+    button:hover {
       background-color: #cc8400;
       transform: scale(1.05);
     }
   </style>
 </head>
 <body>
-  <h1>Party Card Game</h1>
+  <h1>Select Game Mode and Rounds</h1>
 
-  <button class="menu-button" onclick="location.href='game-setup.html'">Quick Start</button>
-  <button class="menu-button" onclick="location.href='player-setup.html'">Custom Setup</button>
+  <label for="mode">Game Mode:</label><br>
+  <select id="mode">
+    <option value="party">Party</option>
+    <option value="drinking">Drinking</option>
+    <option value="chill">Chill</option>
+    <option value="nsfw">NSFW</option>
+    <option value="all">All Out</option>
+  </select><br><br>
+
+  <label for="rounds">Number of Rounds:</label><br>
+  <select id="rounds">
+    <option value="10">10</option>
+    <option value="15">15</option>
+    <option value="20">20</option>
+  </select><br><br>
+
+  <button onclick="startGame()">Start Game</button>
+
+  <script>
+    function startGame() {
+      const mode = document.getElementById("mode").value;
+      const rounds = document.getElementById("rounds").value;
+      window.location.href = `game.html?mode=${mode}&rounds=${rounds}`;
+    }
+  </script>
 </body>
 </html>

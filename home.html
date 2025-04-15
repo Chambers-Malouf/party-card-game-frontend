@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Party Card Game</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background-color: #1c1c1c;
+      color: #f5f5f5;
+    }
+    h1 {
+      font-size: 2.5em;
+      color: #ffa500;
+      margin-bottom: 30px;
+    }
+    .menu-button {
+      display: block;
+      width: 250px;
+      margin: 20px auto;
+      padding: 15px 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #1c1c1c;
+      background-color: #ffa500;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .menu-button:hover {
+      background-color: #cc8400;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>Party Card Game</h1>
+
+  <button class="menu-button" onclick="location.href='game-setup.html'">Quick Start</button>
+  <button class="menu-button" onclick="location.href='player-setup.html'">Add Players</button>
+</body>
+</html>
