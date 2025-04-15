@@ -12,12 +12,6 @@
     }
     h1 {
       font-size: 2em;
-      margin-bottom: 10px;
-    }
-    #quickStartNote {
-      font-size: 0.95em;
-      color: #666;
-      font-style: italic;
       margin-bottom: 20px;
     }
     button {
@@ -33,6 +27,7 @@
     button:hover {
       background-color: #e60040;
     }
+
     .card-container {
       perspective: 1000px;
       width: 320px;
@@ -40,6 +35,7 @@
       margin: 40px auto;
       position: relative;
     }
+
     .card {
       position: relative;
       width: 100%;
@@ -47,9 +43,11 @@
       transition: transform 1s;
       transform-style: preserve-3d;
     }
+
     .card.flipped {
       transform: rotateY(180deg);
     }
+
     .card-side {
       position: absolute;
       width: 100%;
@@ -58,9 +56,11 @@
       border-radius: 16px;
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
+
     .card-front {
       background: url('images/backside.jpg') center/cover no-repeat;
     }
+
     .card-back {
       transform: rotateY(180deg);
       background: #fff;
@@ -68,22 +68,55 @@
       align-items: center;
       justify-content: center;
     }
+
     .card-back img {
       max-width: 90%;
       max-height: 90%;
       border-radius: 12px;
     }
+
     pre {
       font-size: 1.3em;
       color: #333;
+    }
+
+    #game-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 40px;
+      z-index: 10;
+    }
+
+    #game-controls button {
+      padding: 10px 20px;
+      font-size: 1em;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: #ccc;
+      color: #1c1c1c;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #game-controls button:hover {
+      background-color: #bbb;
     }
   </style>
 </head>
 <body>
   <h1 id="modeTitle">Game Mode:</h1>
-  <p id="quickStartNote"></p>
   <button onclick="drawCard()">Draw Card</button>
   <div id="result"></div>
+
+  <div id="game-controls">
+    <button onclick="window.location.href='home.html'">Leave Game</button>
+    <button onclick="startNewGame()">Start New Game</button>
+  </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -91,125 +124,124 @@
     const totalRounds = parseInt(urlParams.get("rounds")) || 10;
     let currentRound = 0;
     const usedCards = new Set();
-
     const players = JSON.parse(localStorage.getItem("playerNames") || "[]");
     const useNameDeck = players.length > 0;
 
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
-    if (!useNameDeck) {
-      document.getElementById("quickStartNote").textContent = "Quick Start mode: Anyone can answer each card!";
-    }
 
     const cardImageMap = {
       "Still in love with your ex? Finish your drink.": "images/still_in_love_with_your_ex_finish_your_drink.jpg"
     };
+
     async function drawCard() {
-  if (currentRound >= totalRounds) {
-    document.getElementById("result").innerHTML = `
-      <h2 style="color: #ffa500;">Game Over!</h2>
-      <p>You finished all ${totalRounds} cards.</p>
-      <button onclick="window.location.href='home.html'">Back to Home</button>
-    `;
-    return;
-  }
-
-  try {
-    let cardText = null;
-    let maxTries = 10;
-
-    while (maxTries-- > 0) {
-      const response = await fetch("https://party-card-game.onrender.com/api/draw-card", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode })
-      });
-
-      const data = await response.json();
-      if (!data.card) break;
-
-      const needsOne = data.card.includes("[player]");
-      const needsTwo = data.card.includes("[player1]") || data.card.includes("[player2]");
-
-      if (!useNameDeck && (needsOne || needsTwo)) continue;
-      if (!usedCards.has(data.card)) {
-        cardText = data.card;
-        usedCards.add(data.card);
-        break;
+      if (currentRound >= totalRounds) {
+        document.getElementById("result").innerHTML = `
+          <h2 style="color: #ffa500;">Game Over!</h2>
+          <p>You finished all ${totalRounds} cards.</p>
+          <button onclick="window.location.href='home.html'">Back to Home</button>
+        `;
+        return;
       }
-    }
 
-    if (!cardText) {
-      document.getElementById("result").innerHTML = `
-        <p>No more unique cards available for this mode.</p>
-        <button onclick="window.location.href='home.html'">Back to Home</button>
-      `;
-      return;
-    }
+      try {
+        let cardText = null;
+        let maxTries = 10;
 
-    // 🔄 Dynamic name substitution
-    if (useNameDeck) {
-      const shuffled = [...players].sort(() => 0.5 - Math.random());
-      const p1 = shuffled[0];
-      let p2 = p1;
+        while (maxTries-- > 0) {
+          const response = await fetch("https://party-card-game.onrender.com/api/draw-card", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode })
+          });
 
-      // ✅ Ensure player1 and player2 are not the same if possible
-      if (players.length > 1) {
-        while (p2 === p1) {
-          p2 = players[Math.floor(Math.random() * players.length)];
+          const data = await response.json();
+          if (!data.card) break;
+
+          const needsOne = data.card.includes("[player]");
+          const needsTwo = data.card.includes("[player1]") || data.card.includes("[player2]");
+
+          if (!useNameDeck && (needsOne || needsTwo)) continue;
+          if (!usedCards.has(data.card)) {
+            cardText = data.card;
+            usedCards.add(data.card);
+            break;
+          }
         }
-      }
 
-      // Replace placeholders
-      cardText = cardText
-        .replaceAll("[player1]", p1)
-        .replaceAll("[player2]", p2)
-        .replaceAll("[player]", p1);
+        if (!cardText) {
+          document.getElementById("result").innerHTML = `
+            <p>No more unique cards available for this mode.</p>
+            <button onclick="window.location.href='home.html'">Back to Home</button>
+          `;
+          return;
+        }
 
-      // ✅ Only inject a random name for vague cards with no commas or tags
-      if (
-        !cardText.includes("[player]") &&
-        !cardText.includes("[player1]") &&
-        !cardText.includes("[player2]") &&
-        !cardText.includes(",") && // new condition: skip if sentence already has a name intro
-        players.length > 0 &&
-        Math.random() < 0.5
-      ) {
-        const randomName = players[Math.floor(Math.random() * players.length)];
-        cardText = `${randomName}, ${cardText.charAt(0).toLowerCase() + cardText.slice(1)}`;
-      }
-    }
+        if (useNameDeck) {
+          const shuffled = [...players].sort(() => 0.5 - Math.random());
+          const p1 = shuffled[0];
+          let p2 = p1;
+          if (players.length > 1) {
+            while (p2 === p1) {
+              p2 = players[Math.floor(Math.random() * players.length)];
+            }
+          }
 
-    // 🖼️ Optional image card support
-    const imagePath = cardImageMap[cardText];
-    const resultElement = document.getElementById("result");
-    resultElement.innerHTML = "";
+          cardText = cardText
+            .replaceAll("[player1]", p1)
+            .replaceAll("[player2]", p2)
+            .replaceAll("[player]", p1);
 
-    if (imagePath) {
-      resultElement.innerHTML = `
-        <div class="card-container">
-          <div class="card" id="flipCard">
-            <div class="card-side card-front"></div>
-            <div class="card-side card-back">
-              <img src="${imagePath}" alt="${cardText}">
+          if (
+            !cardText.includes("[player]") &&
+            !cardText.includes("[player1]") &&
+            !cardText.includes("[player2]") &&
+            !cardText.includes(",") &&
+            players.length > 0 &&
+            Math.random() < 0.5
+          ) {
+            const randomName = players[Math.floor(Math.random() * players.length)];
+            cardText = `${randomName}, ${cardText.charAt(0).toLowerCase() + cardText.slice(1)}`;
+          }
+        }
+
+        const imagePath = cardImageMap[cardText];
+        const resultElement = document.getElementById("result");
+        resultElement.innerHTML = "";
+
+        if (imagePath) {
+          resultElement.innerHTML = `
+            <div class="card-container">
+              <div class="card" id="flipCard">
+                <div class="card-side card-front"></div>
+                <div class="card-side card-back">
+                  <img src="${imagePath}" alt="${cardText}">
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      `;
-      setTimeout(() => {
-        document.getElementById("flipCard").classList.add("flipped");
-      }, 600);
-    } else {
-      resultElement.innerHTML = `<pre>${cardText}</pre>`;
+          `;
+          setTimeout(() => {
+            document.getElementById("flipCard").classList.add("flipped");
+          }, 600);
+        } else {
+          resultElement.innerHTML = `<pre>${cardText}</pre>`;
+        }
+
+        currentRound++;
+        document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
+      } catch (error) {
+        console.error("Error fetching card:", error);
+        document.getElementById("result").textContent = "Error: " + error.message;
+      }
     }
 
-    currentRound++;
-    document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
-  } catch (error) {
-    console.error("Error fetching card:", error);
-    document.getElementById("result").textContent = "Error: " + error.message;
-  }
-}
-
+    function startNewGame() {
+      const useSame = confirm("Start a new game with the same players?");
+      if (useSame) {
+        window.location.href = "game-setup.html";
+      } else {
+        window.location.href = "player-setup.html";
+      }
+    }
   </script>
 </body>
 </html>

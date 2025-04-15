@@ -60,7 +60,7 @@
   </select>
 
   <div id="nameInputs"></div>
-
+  <button onclick="resetPlayers()" style="margin-top: 20px;">Reset Saved Players</button>
   <button onclick="continueToSetup()">Continue</button>
 
   <script>
@@ -92,6 +92,23 @@
       localStorage.setItem("playerNames", JSON.stringify(names));
       window.location.href = "game-setup.html";
     }
+    function resetPlayers() {
+    localStorage.removeItem("playerNames");
+    location.reload();
+  }
+
+  // Optional: preload saved names into inputs if they exist
+  const saved = JSON.parse(localStorage.getItem("playerNames") || "[]");
+  if (saved.length > 0) {
+    document.getElementById("playerCount").value = saved.length;
+    generateInputs();
+    setTimeout(() => {
+      const inputs = document.querySelectorAll(".player-name");
+      saved.forEach((name, index) => {
+        if (inputs[index]) inputs[index].value = name;
+      });
+    }, 50);
+  }
   </script>
 </body>
 </html>
