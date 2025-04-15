@@ -150,18 +150,27 @@
     if (useNameDeck) {
       const shuffled = [...players].sort(() => 0.5 - Math.random());
       const p1 = shuffled[0];
-      const p2 = shuffled[1] || p1;
+      let p2 = p1;
 
+      // ✅ Ensure player1 and player2 are not the same if possible
+      if (players.length > 1) {
+        while (p2 === p1) {
+          p2 = players[Math.floor(Math.random() * players.length)];
+        }
+      }
+
+      // Replace placeholders
       cardText = cardText
         .replaceAll("[player1]", p1)
         .replaceAll("[player2]", p2)
         .replaceAll("[player]", p1);
 
-      // ✅ Only inject random name if NO placeholders are used
+      // ✅ Only inject a random name for vague cards with no commas or tags
       if (
         !cardText.includes("[player]") &&
         !cardText.includes("[player1]") &&
         !cardText.includes("[player2]") &&
+        !cardText.includes(",") && // new condition: skip if sentence already has a name intro
         players.length > 0 &&
         Math.random() < 0.5
       ) {
@@ -170,7 +179,7 @@
       }
     }
 
-    // 🔄 Display logic
+    // 🖼️ Optional image card support
     const imagePath = cardImageMap[cardText];
     const resultElement = document.getElementById("result");
     resultElement.innerHTML = "";
@@ -199,7 +208,8 @@
     console.error("Error fetching card:", error);
     document.getElementById("result").textContent = "Error: " + error.message;
   }
-} 
+}
+
   </script>
 </body>
 </html>
