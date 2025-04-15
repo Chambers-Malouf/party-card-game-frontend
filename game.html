@@ -34,15 +34,15 @@
       height: 400px;
       margin: 40px auto;
       position: relative;
+      cursor: pointer;
     }
 
     .card {
       position: relative;
       width: 100%;
       height: 100%;
+      transition: transform 0.8s;
       transform-style: preserve-3d;
-      transition: transform 0.8s ease;
-      cursor: pointer;
     }
 
     .card.flipped {
@@ -55,7 +55,7 @@
       height: 100%;
       backface-visibility: hidden;
       border-radius: 16px;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
 
     .card-front {
@@ -123,10 +123,9 @@
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get("mode") || "party";
     const totalRounds = parseInt(urlParams.get("rounds")) || 10;
+    let currentRound = 0;
     const players = JSON.parse(localStorage.getItem("playerNames") || "[]");
     const useNameDeck = players.length > 0;
-
-    let currentRound = 0;
     let availableCards = [];
 
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
@@ -136,8 +135,10 @@
     };
 
     async function drawCard() {
+      const resultElement = document.getElementById("result");
+
       if (currentRound >= totalRounds) {
-        document.getElementById("result").innerHTML = `
+        resultElement.innerHTML = `
           <h2 style="color: #ffa500;">Game Over!</h2>
           <p>You finished all ${totalRounds} cards.</p>
           <button onclick="window.location.href='home.html'">Back to Home</button>
@@ -152,27 +153,22 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ mode })
           });
+
           const data = await response.json();
-          if (!Array.isArray(data.cards) || data.cards.length === 0) throw new Error("No cards returned");
-
-          availableCards = data.cards.filter(card => {
-            const needsOne = card.includes("[player]");
-            const needsTwo = card.includes("[player1]") || card.includes("[player2]");
-            return useNameDeck || (!needsOne && !needsTwo);
-          });
-
-          availableCards.sort(() => 0.5 - Math.random());
+          if (!data.card) throw new Error("No cards returned");
+          availableCards = data.card.split("||");
         }
 
-        if (availableCards.length === 0) {
-          document.getElementById("result").innerHTML = `
-            <p>No unique cards available for this mode.</p>
+        const rawCard = availableCards.shift();
+        if (!rawCard) {
+          resultElement.innerHTML = `
+            <p>No more unique cards available.</p>
             <button onclick="window.location.href='home.html'">Back to Home</button>
           `;
           return;
         }
 
-        let cardText = availableCards.pop();
+        let cardText = rawCard;
 
         if (useNameDeck) {
           const shuffled = [...players].sort(() => 0.5 - Math.random());
@@ -183,27 +179,20 @@
               p2 = players[Math.floor(Math.random() * players.length)];
             }
           }
+
           cardText = cardText
             .replaceAll("[player1]", p1)
             .replaceAll("[player2]", p2)
             .replaceAll("[player]", p1);
 
-          if (
-            !cardText.includes("[player]") &&
-            !cardText.includes("[player1]") &&
-            !cardText.includes("[player2]") &&
-            !cardText.includes(",") &&
-            players.length > 0 &&
-            Math.random() < 0.5
-          ) {
+          if (!cardText.includes("[player") && !cardText.includes(",") && Math.random() < 0.5) {
             const randomName = players[Math.floor(Math.random() * players.length)];
             cardText = `${randomName}, ${cardText.charAt(0).toLowerCase() + cardText.slice(1)}`;
           }
         }
 
-        const imagePath = cardImageMap[cardText];
-        const resultElement = document.getElementById("result");
         resultElement.innerHTML = "";
+        const imagePath = cardImageMap[rawCard];
 
         if (imagePath) {
           resultElement.innerHTML = `
@@ -224,7 +213,7 @@
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
       } catch (error) {
         console.error("Error fetching card:", error);
-        document.getElementById("result").textContent = "Error: " + error.message;
+        resultElement.textContent = "Error: " + error.message;
       }
     }
 
