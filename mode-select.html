@@ -11,15 +11,17 @@
       background-color: #1c1c1c;
       color: #f5f5f5;
     }
+
     h1 {
       font-size: 2.5em;
       color: #ffa500;
       margin-bottom: 30px;
     }
-    .mode-button, .round-button, .start-button {
+
+    .menu-button {
       display: block;
       width: 250px;
-      margin: 15px auto;
+      margin: 20px auto;
       padding: 15px 20px;
       font-size: 1.2em;
       font-weight: bold;
@@ -30,59 +32,17 @@
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s ease;
     }
-    .mode-button:hover, .round-button:hover, .start-button:hover {
+
+    .menu-button:hover {
       background-color: #cc8400;
       transform: scale(1.05);
-    }
-    .selected {
-      outline: 3px solid #8affc1;
-    }
-    .hidden {
-      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Pick Your Mode</h1>
-  <button class="mode-button" onclick="selectMode('party')">Party</button>
-  <button class="mode-button" onclick="selectMode('drinking')">Drinking</button>
-  <button class="mode-button" onclick="selectMode('chill')">Chill</button>
-  <button class="mode-button" onclick="selectMode('nsfw')">NSFW</button>
-  <button class="mode-button" onclick="selectMode('all')">ALL OUT</button>
+  <h1>Party Card Game</h1>
 
-
-  <div id="roundSection" class="hidden">
-    <h1>Pick Rounds</h1>
-    <button class="round-button" onclick="selectRounds(10)">10 Cards</button>
-    <button class="round-button" onclick="selectRounds(15)">15 Cards</button>
-    <button class="round-button" onclick="selectRounds(20)">20 Cards</button>
-  </div>
-
-  <button id="startButton" class="start-button hidden" onclick="startGame()">Start Game</button>
-
-  <script>
-    let selectedMode = null;
-    let selectedRounds = null;
-
-    function selectMode(mode) {
-      selectedMode = mode;
-      document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('selected'));
-      event.target.classList.add('selected');
-      document.getElementById('roundSection').classList.remove('hidden');
-    }
-
-    function selectRounds(rounds) {
-      selectedRounds = rounds;
-      document.querySelectorAll('.round-button').forEach(btn => btn.classList.remove('selected'));
-      event.target.classList.add('selected');
-      document.getElementById('startButton').classList.remove('hidden');
-    }
-
-    function startGame() {
-      if (selectedMode && selectedRounds) {
-        window.location.href = `game.html?mode=${selectedMode}&rounds=${selectedRounds}`;
-      }
-    }
-  </script>
+  <button class="menu-button" onclick="location.href='mode-select.html'">Quick Start</button>
+  <button class="menu-button" onclick="location.href='player-setup.html'">Custom Setup</button>
 </body>
 </html>

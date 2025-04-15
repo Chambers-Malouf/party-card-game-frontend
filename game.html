@@ -138,6 +138,11 @@
           `;
           return;
         }
+        const players = JSON.parse(localStorage.getItem("playerNames") || "[]");
+          if (players.length > 0 && cardText.includes("[player]")) {
+        const target = players[Math.floor(Math.random() * players.length)];
+        cardText = cardText.replace("[player]", target);
+        }
   
         const imagePath = cardImageMap[cardText];
         const resultElement = document.getElementById("result");
