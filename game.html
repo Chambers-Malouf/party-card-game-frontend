@@ -8,12 +8,16 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
       padding: 40px;
-      background: #f9f9f9;
+      background: url('images/backgrounds/chambers_tavern.jpg') center/cover no-repeat fixed;
     }
+
     h1 {
       font-size: 2em;
       margin-bottom: 20px;
+      color: #f1c40f;
+      text-shadow: 1px 1px 2px #000;
     }
+
     button {
       padding: 12px 24px;
       font-size: 1.2em;
@@ -24,6 +28,7 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
+
     button:hover {
       background-color: #e60040;
     }
@@ -58,11 +63,11 @@
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
 
-    .card-front {
-      background: url('images/backside.jpg') center/cover no-repeat;
+    .card-back {
+      background: url('images/ui/backside.jpg') center/cover no-repeat;
     }
 
-    .card-back {
+    .card-front {
       transform: rotateY(180deg);
       background: #fff;
       display: flex;
@@ -70,7 +75,7 @@
       justify-content: center;
     }
 
-    .card-back img {
+    .card-front img {
       max-width: 90%;
       max-height: 90%;
       border-radius: 12px;
@@ -78,7 +83,8 @@
 
     pre {
       font-size: 1.3em;
-      color: #333;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
     }
 
     #game-controls {
@@ -131,7 +137,7 @@
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
     const cardImageMap = {
-      "Still in love with your ex? Finish your drink.": "images/still_in_love_with_ex_running.jpg"
+      "Still in love with your ex? Finish your drink.": "images/cards/still_in_love_with_ex_running.jpg"
     };
 
     async function drawCard() {
@@ -198,8 +204,8 @@
           resultElement.innerHTML = `
             <div class="card-container" onclick="this.querySelector('.card').classList.toggle('flipped')">
               <div class="card">
-                <div class="card-side card-front"></div>
-                <div class="card-side card-back">
+                <div class="card-side card-back"></div>
+                <div class="card-side card-front">
                   <img src="${imagePath}" alt="${cardText}">
                 </div>
               </div>
