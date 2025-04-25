@@ -159,6 +159,15 @@
               <div class="card-side card-front">${cardText}</div>
             </div>
           </div>`;
+          document.getElementById("result").innerHTML += `
+        <button id="nextButton" style="margin-top: 20px; padding: 10px 20px; font-size: 1em; border: none; background-color: #cc4444; color: white; border-radius: 8px; cursor: pointer;">
+          Next Card
+        </button>
+        `;
+
+        document.getElementById("nextButton").addEventListener("click", () => {
+        drawCard(); // Draw the next card
+        });
           
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
       } catch (error) {
