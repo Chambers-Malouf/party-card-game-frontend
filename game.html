@@ -159,14 +159,24 @@
               <div class="card-side card-front">${cardText}</div>
             </div>
           </div>`;
-          document.getElementById("result").innerHTML += `
-        <button id="nextButton" style="margin-top: 20px; padding: 10px 20px; font-size: 1em; border: none; background-color: #cc4444; color: white; border-radius: 8px; cursor: pointer;">
-          Next Card
-        </button>
+          document.getElementById("result").innerHTML = `
+          <div class="card-container">
+            <div class="card" id="gameCard">
+              <div class="card-side card-back" style="background-image: url('${cardBackURL}')"></div>
+              <div class="card-side card-front" id="cardFront">${cardText}</div>
+            </div>
+          </div>
         `;
 
-        document.getElementById("nextButton").addEventListener("click", () => {
-        drawCard(); // Draw the next card
+        const cardElement = document.getElementById("gameCard");
+
+        cardElement.addEventListener("click", function () {
+          if (!this.classList.contains("flipped")) {
+            this.classList.add("flipped");
+          } else {
+            this.classList.remove("flipped");
+            drawCard(); // Automatically go to next card on second click
+          }
         });
           
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
