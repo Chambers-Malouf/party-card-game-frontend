@@ -123,7 +123,7 @@
       }
 
       try {
-        const response = await fetch("http://localhost:8080/api/get-cards", {
+        const response = await fetch("https://party-card-game-backend.onrender.com/api/get-cards", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mode }),
@@ -132,16 +132,17 @@
         const data = await response.json();
         if (!data.card) throw new Error("No cards returned");
 
-        availableCards = data.card.split("||");
+        if (!availableCards.length) {
+          availableCards = data.card.split("||");
+        }
+
         const rawCard = availableCards.shift();
         currentRound++;
 
-        // Parse card type and severity from the card data
         const typeMatch = rawCard.match(/\[(.*?)\]/g);
         const type = typeMatch?.[0]?.replace(/\[|\]/g, "").toLowerCase() || "conflict";
         const severity = typeMatch?.[1]?.replace(/\[|\]/g, "").toLowerCase() || "mild";
 
-        // Replace player names if needed
         let cardText = rawCard;
         if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
           const shuffled = players.sort(() => 0.5 - Math.random());
@@ -153,13 +154,6 @@
         const cardBackURL = `images/ui/${type}-${severity}.jpg`;
 
         document.getElementById("result").innerHTML = `
-          <div class="card-container" onclick="this.querySelector('.card').classList.toggle('flipped')">
-            <div class="card">
-              <div class="card-side card-back" style="background-image: url('${cardBackURL}')"></div>
-              <div class="card-side card-front">${cardText}</div>
-            </div>
-          </div>`;
-          document.getElementById("result").innerHTML = `
           <div class="card-container">
             <div class="card" id="gameCard">
               <div class="card-side card-back" style="background-image: url('${cardBackURL}')"></div>
@@ -168,18 +162,22 @@
           </div>
         `;
 
-        const cardElement = document.getElementById("gameCard");
+        document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
 
-        cardElement.addEventListener("click", function () {
-          if (!this.classList.contains("flipped")) {
-            this.classList.add("flipped");
+        const cardEl = document.getElementById("gameCard");
+        let flipped = false;
+
+        cardEl.addEventListener("click", () => {
+          if (!flipped) {
+            cardEl.classList.add("flipped");
+            flipped = true;
           } else {
-            this.classList.remove("flipped");
-            drawCard(); // Automatically go to next card on second click
+            cardEl.classList.remove("flipped");
+            flipped = false;
+            setTimeout(drawCard, 300); // small delay for clean transition
           }
         });
-          
-        document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
+
       } catch (error) {
         document.getElementById("result").textContent = "Error: " + error.message;
       }
@@ -190,7 +188,6 @@
       window.location.href = useSame ? "game-setup.html" : "player-setup.html";
     }
 
-    // Auto-start on load
     drawCard();
   </script>
 </body>
