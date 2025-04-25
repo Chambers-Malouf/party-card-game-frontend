@@ -132,7 +132,7 @@
         const data = await response.json();
         if (!data.card) throw new Error("No cards returned");
 
-        availableCards = data.card.split("::");
+        availableCards = data.card.split("||");
         const rawCard = availableCards.shift();
         currentRound++;
 
