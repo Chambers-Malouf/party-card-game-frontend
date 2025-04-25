@@ -13,40 +13,47 @@
 
     h1 {
       font-size: 2em;
-      margin-bottom: 20px;
-      color: #f1c40f;
-      text-shadow: 1px 1px 2px #000;
+      margin-bottom: 10px;
+      color: #fff;
+      text-shadow: 1px 2px 0px #000;
     }
 
-    button {
+    .game-controls {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .game-controls button {
       padding: 12px 24px;
-      font-size: 1.2em;
+      font-size: 1.1em;
+      background-color: #cc4444;
       border: none;
       border-radius: 8px;
-      background-color: #ff4d6d;
       color: white;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
 
-    button:hover {
-      background-color: #e60040;
+    .game-controls button:hover {
+      background-color: #bb0000;
     }
 
     .card-container {
       perspective: 1000px;
-      width: 320px;
-      height: 400px;
-      margin: 40px auto;
+      margin: auto;
+      width: 300px;
+      height: 450px;
       position: relative;
       cursor: pointer;
     }
 
     .card {
-      position: relative;
       width: 100%;
       height: 100%;
-      transition: transform 0.8s;
+      position: relative;
+      transition: transform 0.6s;
       transform-style: preserve-3d;
     }
 
@@ -59,178 +66,113 @@
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
-      border-radius: 16px;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
     }
 
     .card-back {
-      background: url('images/ui/backside.jpg') center/cover no-repeat;
+      background-size: cover;
+      background-position: center;
     }
 
     .card-front {
       transform: rotateY(180deg);
-      background: #fff;
+      background: #111;
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .card-front img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 12px;
+      padding: 20px;
+      font-size: 1.2em;
     }
 
     pre {
-      font-size: 1.3em;
+      font-size: 1.1em;
       color: #fff;
       text-shadow: 1px 1px 2px #000;
-    }
-
-    #game-controls {
-      position: fixed;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 40px;
-      z-index: 10;
-    }
-
-    #game-controls button {
-      padding: 10px 20px;
-      font-size: 1em;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      background-color: #ccc;
-      color: #1c1c1c;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    #game-controls button:hover {
-      background-color: #bbb;
     }
   </style>
 </head>
 <body>
-  <h1 id="modeTitle">Game Mode:</h1>
-  <button onclick="drawCard()">Draw Card</button>
-  <div id="result"></div>
-
-  <div id="game-controls">
+  <h1 id="modeTitle">Game Mode</h1>
+  <div class="game-controls">
     <button onclick="window.location.href='index.html'">Leave Game</button>
     <button onclick="startNewGame()">Start New Game</button>
   </div>
+
+  <div id="result"></div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get("mode") || "party";
     const totalRounds = parseInt(urlParams.get("rounds")) || 10;
-    let currentRound = 0;
     const players = JSON.parse(localStorage.getItem("playerNames") || "[]");
-    const useNameDeck = players.length > 0;
+
+    let currentRound = 0;
     let availableCards = [];
 
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
-    const cardImageMap = {
-      "Still in love with your ex? Finish your drink.": "images/cards/still_in_love_with_ex_running.jpg"
-    };
-
     async function drawCard() {
-      const resultElement = document.getElementById("result");
-
       if (currentRound >= totalRounds) {
-        resultElement.innerHTML = `
-          <h2 style="color: #ffa500;">Game Over!</h2>
-          <p>You finished all ${totalRounds} cards.</p>
-          <button onclick="window.location.href='index.html'">Back to Home</button>
-        `;
+        document.getElementById("result").innerHTML = `
+          <h2>Game Over</h2>
+          <p>You've finished all ${totalRounds} rounds.</p>
+          <button onclick="window.location.href='index.html'">Back to Home</button>`;
         return;
       }
 
       try {
-        if (availableCards.length === 0) {
-          const response = await fetch("http://localhost:8080/api/get-cards", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ mode })
-          });
+        const response = await fetch("http://localhost:8080/api/get-cards", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode }),
+        });
 
-          const data = await response.json();
-          if (!data.card) throw new Error("No cards returned");
-          availableCards = data.card.split("||");
-        }
+        const data = await response.json();
+        if (!data.card) throw new Error("No cards returned");
 
+        availableCards = data.card.split("::");
         const rawCard = availableCards.shift();
-        if (!rawCard) {
-          resultElement.innerHTML = `
-            <p>No more unique cards available.</p>
-            <button onclick="window.location.href='index.html'">Back to Home</button>
-          `;
-          return;
-        }
-
-        let cardText = rawCard;
-
-        if (useNameDeck) {
-          const shuffled = [...players].sort(() => 0.5 - Math.random());
-          const p1 = shuffled[0];
-          let p2 = p1;
-          if (players.length > 1) {
-            while (p2 === p1) {
-              p2 = players[Math.floor(Math.random() * players.length)];
-            }
-          }
-
-          cardText = cardText
-            .replaceAll("[player1]", p1)
-            .replaceAll("[player2]", p2)
-            .replaceAll("[player]", p1);
-
-          if (!cardText.includes("[player") && !cardText.includes(",") && Math.random() < 0.5) {
-            const randomName = players[Math.floor(Math.random() * players.length)];
-            cardText = `${randomName}, ${cardText.charAt(0).toLowerCase() + cardText.slice(1)}`;
-          }
-        }
-
-        resultElement.innerHTML = "";
-        const imagePath = cardImageMap[rawCard];
-
-        if (imagePath) {
-          resultElement.innerHTML = `
-            <div class="card-container" onclick="this.querySelector('.card').classList.toggle('flipped')">
-              <div class="card">
-                <div class="card-side card-back"></div>
-                <div class="card-side card-front">
-                  <img src="${imagePath}" alt="${cardText}">
-                </div>
-              </div>
-            </div>
-          `;
-        } else {
-          resultElement.innerHTML = `<pre>${cardText}</pre>`;
-        }
-
         currentRound++;
+
+        // Parse card type and severity from the card data
+        const typeMatch = rawCard.match(/\[(.*?)\]/g);
+        const type = typeMatch?.[0]?.replace(/\[|\]/g, "").toLowerCase() || "conflict";
+        const severity = typeMatch?.[1]?.replace(/\[|\]/g, "").toLowerCase() || "mild";
+
+        // Replace player names if needed
+        let cardText = rawCard;
+        if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
+          const shuffled = players.sort(() => 0.5 - Math.random());
+          cardText = cardText
+            .replace("[player1]", shuffled[0] || "Player 1")
+            .replace("[player2]", shuffled[1] || "Player 2");
+        }
+
+        const cardBackURL = `images/ui/${type}-${severity}.jpg`;
+
+        document.getElementById("result").innerHTML = `
+          <div class="card-container" onclick="this.querySelector('.card').classList.toggle('flipped')">
+            <div class="card">
+              <div class="card-side card-back" style="background-image: url('${cardBackURL}')"></div>
+              <div class="card-side card-front">${cardText}</div>
+            </div>
+          </div>`;
+          
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
       } catch (error) {
-        console.error("Error fetching card:", error);
-        resultElement.textContent = "Error: " + error.message;
+        document.getElementById("result").textContent = "Error: " + error.message;
       }
     }
 
     function startNewGame() {
       const useSame = confirm("Start a new game with the same players?");
-      if (useSame) {
-        window.location.href = "game-setup.html";
-      } else {
-        window.location.href = "player-setup.html";
-      }
+      window.location.href = useSame ? "game-setup.html" : "player-setup.html";
     }
+
+    // Auto-start on load
+    drawCard();
   </script>
 </body>
 </html>

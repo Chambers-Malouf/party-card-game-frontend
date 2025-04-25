@@ -1,45 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Chambers Drinking Game</title>
+  <title>Chambers' Tavern - Home</title>
   <style>
     body {
+      background: url('images/backgrounds/buckshot_tavern.jpg') center/cover no-repeat;
+      margin: 0;
+      padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffd86b;
       text-align: center;
-      padding: 40px;
-      background-color: #1c1c1c;
-      color: #f5f5f5;
     }
+
     h1 {
-      font-size: 2.5em;
-      color: #ffa500;
-      margin-bottom: 30px;
+      margin-top: 80px;
+      font-size: 2.8em;
+      text-shadow: 2px 2px 5px #000;
     }
-    .menu-button {
-      display: block;
-      width: 250px;
-      margin: 20px auto;
-      padding: 15px 20px;
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #1c1c1c;
-      background-color: #ffa500;
+
+    .menu {
+      margin-top: 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .menu button {
+      padding: 14px 30px;
+      font-size: 1.3em;
       border: none;
-      border-radius: 30px;
+      border-radius: 10px;
+      background-color: #b32d00;
+      color: #fff6dc;
       cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
+      transition: background-color 0.3s ease, transform 0.2s;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
     }
-    .menu-button:hover {
-      background-color: #cc8400;
+
+    .menu button:hover {
+      background-color: #911f00;
       transform: scale(1.05);
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      font-size: 0.9em;
+      color: #e0c987;
+      text-shadow: 1px 1px 2px #000;
     }
   </style>
 </head>
 <body>
-  <h1>CHAMBERS SUPER SICK ULTIMATE BLACKOUT DRINKING GAME</h1>
-
-  <button class="menu-button" onclick="location.href='game-setup.html'">Quick Start</button>
-  <button class="menu-button" onclick="location.href='player-setup.html'">Add Players</button>
+  <h1>Welcome to Chambers' Tavern</h1>
+  <div class="menu">
+    <button onclick="window.location.href='game.html?mode=party&rounds=10'">Quick Start</button>
+    <button onclick="window.location.href='player-setup.html'">Add Players</button>
+    <button onclick="window.location.href='game-setup.html'">Game Setup</button>
+  </div>
+  <div class="footer">Let's get weird. Drink responsibly.</div>
 </body>
 </html>
