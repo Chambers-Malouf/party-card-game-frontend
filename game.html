@@ -53,8 +53,13 @@
       width: 100%;
       height: 100%;
       position: relative;
-      transition: transform 0.6s;
+      transition: transform 0.6s, opacity 0.5s ease;
       transform-style: preserve-3d;
+      opacity: 1;
+    }
+
+    .card.hidden {
+      opacity: 0;
     }
 
     .card.flipped {
@@ -129,23 +134,12 @@
 
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
-    const backImages = [
-      "conflict-casual", "conflict-mild", "conflict-extreme",
-      "truth-casual", "truth-mild", "truth-extreme",
-      "drama-casual", "drama-mild", "drama-extreme",
-      "wild-casual", "wild-mild", "wild-extreme",
-      "duo-casual", "duo-mild", "duo-extreme"
-    ];
+    async function setupCard(cardBackURL, cardText) {
+      loadingOverlay.style.display = "none";
 
-    backImages.forEach(name => {
-      const img = new Image();
-      img.src = `images/ui/${name}.jpg`;
-    });
-
-    function setupCard(cardBackURL, cardText) {
       document.getElementById("result").innerHTML = `
         <div class="card-container">
-          <div class="card" id="gameCard">
+          <div class="card hidden" id="gameCard">
             <div class="card-side card-back" style="background-image: url('${cardBackURL}')"></div>
             <div class="card-side card-front" id="cardFront">${cardText}</div>
           </div>
@@ -153,6 +147,7 @@
       `;
 
       const cardEl = document.getElementById("gameCard");
+      setTimeout(() => cardEl.classList.remove('hidden'), 100); // Fade in
       flipped = false;
 
       cardEl.addEventListener("click", async () => {
@@ -163,14 +158,14 @@
           cardEl.classList.remove("flipped");
           flipped = false;
 
-          // ✅ Show loading overlay immediately
           loadingOverlay.style.display = "flex";
 
           setTimeout(async () => {
             await prepareNextCard();
-            setupCard(nextCardData.backURL, nextCardData.text);
-            loadingOverlay.style.display = "none";
-          }, 1000); // 1 second wait (adjust here if you want 2 sec, 5 sec)
+            preloadCardImage(nextCardData.backURL).then(() => {
+              setupCard(nextCardData.backURL, nextCardData.text);
+            });
+          }, 1000); // 1 second after unflip
         }
       });
     }
@@ -230,14 +225,30 @@
       }
     }
 
+    function preloadCardImage(url) {
+      return new Promise((resolve) => {
+        if (!url) {
+          resolve();
+          return;
+        }
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;
+        img.onerror = resolve; // Even if image fails, proceed
+      });
+    }
+
     function startNewGame() {
       const useSame = confirm("Start a new game with the same players?");
       window.location.href = useSame ? "game-setup.html" : "player-setup.html";
     }
 
-    // Load first card immediately
+    // Initial load
+    loadingOverlay.style.display = "flex";
     prepareNextCard().then(() => {
-      setupCard(nextCardData.backURL, nextCardData.text);
+      preloadCardImage(nextCardData.backURL).then(() => {
+        setupCard(nextCardData.backURL, nextCardData.text);
+      });
     });
   </script>
 </body>
