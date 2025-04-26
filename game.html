@@ -114,6 +114,20 @@
 
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
+    // ✅ Preload all back images at page load
+    const backImages = [
+      "conflict-casual", "conflict-mild", "conflict-extreme",
+      "truth-casual", "truth-mild", "truth-extreme",
+      "drama-casual", "drama-mild", "drama-extreme",
+      "wild-casual", "wild-mild", "wild-extreme",
+      "duo-casual", "duo-mild", "duo-extreme"
+    ];
+
+    backImages.forEach(name => {
+      const img = new Image();
+      img.src = `images/ui/${name}.jpg`;
+    });
+
     function setupCard(cardBackURL, cardText) {
       document.getElementById("result").innerHTML = `
         <div class="card-container">
@@ -135,10 +149,9 @@
           cardEl.classList.remove("flipped");
           flipped = false;
 
-          // Wait for the unflip animation to finish before drawing the next card
           setTimeout(() => {
             drawCard();
-          }, 600); // matches the .card { transition: transform 0.6s }
+          }, 600);
         }
       });
     }
@@ -171,7 +184,7 @@
 
         const typeMatch = rawCard.match(/\[(.*?)\]/g);
         const type = typeMatch?.[0]?.replace(/\[|\]/g, "").toLowerCase() || "conflict";
-        const severity = typeMatch?.[1]?.replace(/\[|\]/g, "").toLowerCase() || "mild";
+        const severity = typeMatch?.[1]?.replace(/\[|\]/g, "").toLowerCase() || "casual";
 
         let cardText = rawCard;
         if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
@@ -197,6 +210,7 @@
       window.location.href = useSame ? "game-setup.html" : "player-setup.html";
     }
 
+    // Load the first card on page load
     drawCard();
   </script>
 </body>
