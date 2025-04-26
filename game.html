@@ -86,14 +86,26 @@
       font-size: 1.2em;
     }
 
-    pre {
-      font-size: 1.1em;
-      color: #fff;
-      text-shadow: 1px 1px 2px #000;
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      z-index: 9999;
+      display: none;
     }
   </style>
 </head>
 <body>
+  <div id="loadingOverlay">Loading Next Card...</div>
+
   <h1 id="modeTitle">Game Mode</h1>
   <div class="game-controls">
     <button onclick="window.location.href='index.html'">Leave Game</button>
@@ -111,10 +123,12 @@
     let currentRound = 0;
     let availableCards = [];
     let flipped = false;
+    let nextCardData = null;
+
+    const loadingOverlay = document.getElementById("loadingOverlay");
 
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
-    // ✅ Preload all back images at page load
     const backImages = [
       "conflict-casual", "conflict-mild", "conflict-extreme",
       "truth-casual", "truth-mild", "truth-extreme",
@@ -141,7 +155,7 @@
       const cardEl = document.getElementById("gameCard");
       flipped = false;
 
-      cardEl.addEventListener("click", () => {
+      cardEl.addEventListener("click", async () => {
         if (!flipped) {
           cardEl.classList.add("flipped");
           flipped = true;
@@ -149,19 +163,24 @@
           cardEl.classList.remove("flipped");
           flipped = false;
 
-          setTimeout(() => {
-            drawCard();
-          }, 600);
+          // ✅ Show loading overlay immediately
+          loadingOverlay.style.display = "flex";
+
+          setTimeout(async () => {
+            await prepareNextCard();
+            setupCard(nextCardData.backURL, nextCardData.text);
+            loadingOverlay.style.display = "none";
+          }, 1000); // 1 second wait (adjust here if you want 2 sec, 5 sec)
         }
       });
     }
 
-    async function drawCard() {
+    async function prepareNextCard() {
       if (currentRound >= totalRounds) {
-        document.getElementById("result").innerHTML = `
-          <h2>Game Over</h2>
-          <p>You've finished all ${totalRounds} rounds.</p>
-          <button onclick="window.location.href='index.html'">Back to Home</button>`;
+        nextCardData = {
+          backURL: "",
+          text: `<h2>Game Over</h2><p>You've finished all ${totalRounds} rounds.</p><button onclick="window.location.href='index.html'">Back to Home</button>`
+        };
         return;
       }
 
@@ -196,12 +215,18 @@
 
         const cardBackURL = `images/ui/${type}-${severity}.jpg`;
 
-        setupCard(cardBackURL, cardText);
+        nextCardData = {
+          backURL: cardBackURL,
+          text: cardText
+        };
 
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
 
       } catch (error) {
-        document.getElementById("result").textContent = "Error: " + error.message;
+        nextCardData = {
+          backURL: "",
+          text: "Error: " + error.message
+        };
       }
     }
 
@@ -210,8 +235,10 @@
       window.location.href = useSame ? "game-setup.html" : "player-setup.html";
     }
 
-    // Load the first card on page load
-    drawCard();
+    // Load first card immediately
+    prepareNextCard().then(() => {
+      setupCard(nextCardData.backURL, nextCardData.text);
+    });
   </script>
 </body>
 </html>
