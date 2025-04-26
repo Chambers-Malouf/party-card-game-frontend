@@ -110,6 +110,7 @@
 
     let currentRound = 0;
     let availableCards = [];
+    let flipped = false;
 
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
@@ -165,7 +166,7 @@
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
 
         const cardEl = document.getElementById("gameCard");
-        let flipped = false;
+        flipped = false;
 
         cardEl.addEventListener("click", () => {
           if (!flipped) {
@@ -174,7 +175,11 @@
           } else {
             cardEl.classList.remove("flipped");
             flipped = false;
-            setTimeout(drawCard, 300); // small delay for clean transition
+
+            // Wait for flip-back transition to finish before drawing next
+            setTimeout(() => {
+              drawCard();
+            }, 600);
           }
         });
 
