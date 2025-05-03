@@ -147,7 +147,7 @@
       `;
 
       const cardEl = document.getElementById("gameCard");
-      setTimeout(() => cardEl.classList.remove('hidden'), 100); // Fade in
+      setTimeout(() => cardEl.classList.remove('hidden'), 100);
       flipped = false;
 
       cardEl.addEventListener("click", async () => {
@@ -157,7 +157,6 @@
         } else {
           cardEl.classList.remove("flipped");
           flipped = false;
-
           loadingOverlay.style.display = "flex";
 
           setTimeout(async () => {
@@ -165,7 +164,7 @@
             preloadCardImage(nextCardData.backURL).then(() => {
               setupCard(nextCardData.backURL, nextCardData.text);
             });
-          }, 1000); // 1 second after unflip
+          }, 1000);
         }
       });
     }
@@ -179,50 +178,42 @@
         return;
       }
 
-      try {
-        const response = await fetch("https://party-card-game-backend.onrender.com/api/get-cards", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mode }),
-        });
-
-        const data = await response.json();
-        if (!data.card) throw new Error("No cards returned");
-
-        if (!availableCards.length) {
-          availableCards = data.card.split("||");
+      if (!availableCards.length) {
+        try {
+          const response = await fetch("https://party-card-game-backend.onrender.com/api/get-cards", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode })
+          });
+          availableCards = await response.json();
+        } catch (e) {
+          nextCardData = {
+            backURL: "",
+            text: "Error: Unable to load cards."
+          };
+          return;
         }
-
-        const rawCard = availableCards.shift();
-        currentRound++;
-
-        const typeMatch = rawCard.match(/\[(.*?)\]/g);
-        const type = typeMatch?.[0]?.replace(/\[|\]/g, "").toLowerCase() || "conflict";
-        const severity = typeMatch?.[1]?.replace(/\[|\]/g, "").toLowerCase() || "casual";
-
-        let cardText = rawCard;
-        if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
-          const shuffled = players.sort(() => 0.5 - Math.random());
-          cardText = cardText
-            .replace("[player1]", shuffled[0] || "Player 1")
-            .replace("[player2]", shuffled[1] || "Player 2");
-        }
-
-        const cardBackURL = `images/ui/${type}-${severity}.jpg`;
-
-        nextCardData = {
-          backURL: cardBackURL,
-          text: cardText
-        };
-
-        document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
-
-      } catch (error) {
-        nextCardData = {
-          backURL: "",
-          text: "Error: " + error.message
-        };
       }
+
+      const card = availableCards.shift();
+      currentRound++;
+
+      let cardText = card.text;
+      if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
+        const shuffled = players.sort(() => 0.5 - Math.random());
+        cardText = cardText
+          .replace("[player1]", shuffled[0] || "Player 1")
+          .replace("[player2]", shuffled[1] || "Player 2");
+      }
+
+      const cardBackURL = `images/ui/${card.type}-${card.severity}.jpg`;
+
+      nextCardData = {
+        backURL: cardBackURL,
+        text: cardText
+      };
+
+      document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
     }
 
     function preloadCardImage(url) {
@@ -234,7 +225,7 @@
         const img = new Image();
         img.src = url;
         img.onload = resolve;
-        img.onerror = resolve; // Even if image fails, proceed
+        img.onerror = resolve;
       });
     }
 
@@ -243,7 +234,6 @@
       window.location.href = useSame ? "game-setup.html" : "player-setup.html";
     }
 
-    // Initial load
     loadingOverlay.style.display = "flex";
     prepareNextCard().then(() => {
       preloadCardImage(nextCardData.backURL).then(() => {
