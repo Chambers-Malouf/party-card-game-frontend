@@ -66,9 +66,15 @@
       font-size: 1.2em;
       overflow: hidden;
     }
+    .card-front.image-card {
+      background: none;
+      padding: 0;
+      display: block;
+    }
     .card-front img {
-      max-width: 100%;
-      max-height: 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       border-radius: 10px;
     }
     #loadingOverlay {
@@ -107,7 +113,6 @@
     <button onclick="startNewGame()">Start New Game</button>
   </div>
   <div id="result"></div>
-
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get("mode") || "party";
@@ -140,7 +145,8 @@
 
     async function setupCard(backURL, frontContent) {
       loadingOverlay.style.display = "none";
-      const frontHTML = frontContent.includes("images/cards/")
+      const isImageCard = frontContent.includes("images/cards/");
+      const frontHTML = isImageCard
         ? `<img src='${frontContent}' alt='Card Image'>`
         : frontContent;
 
@@ -148,7 +154,7 @@
         <div class="card-container">
           <div class="card" id="gameCard">
             <div class="card-side card-back" style="background-image: url('${backURL}')"></div>
-            <div class="card-side card-front" id="cardFront">${frontHTML}</div>
+            <div class="card-side card-front${isImageCard ? ' image-card' : ''}" id="cardFront">${frontHTML}</div>
           </div>
         </div>
       `;
@@ -214,20 +220,17 @@
         }
 
         const backURL = `images/ui/${type}-${severity}.jpg`;
-
         const slug = rawCard.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
-        const imageOverrides = {
-          "still_in_love_with_your_ex_finish_your_drink": "still_in_love_with_ex_running.jpg"
-        };
-        const frontImageFile = imageOverrides[slug] || `${slug}.jpg`;
-        const frontImagePath = `images/cards/${frontImageFile}`;
+        const frontImagePath = `images/cards/${slug}.jpg`;
 
-        try {
-          await preloadCardImage(frontImagePath);
+        const testImg = new Image();
+        testImg.src = frontImagePath;
+        testImg.onload = () => {
           nextCardData = { backURL, frontContent: frontImagePath };
-        } catch {
+        };
+        testImg.onerror = () => {
           nextCardData = { backURL, frontContent: cardText };
-        }
+        };
 
         currentRound++;
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
@@ -240,11 +243,11 @@
     }
 
     function preloadCardImage(url) {
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         const img = new Image();
         img.src = url;
         img.onload = resolve;
-        img.onerror = reject;
+        img.onerror = resolve;
       });
     }
 
