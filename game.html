@@ -174,6 +174,15 @@
       });
     }
 
+    async function imageExists(path) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.src = path;
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+      });
+    }
+
     async function prepareNextCard() {
       if (currentRound >= totalRounds) {
         showEndSequence();
@@ -201,29 +210,25 @@
         if (!availableCards.length) availableCards = data;
 
         const card = availableCards.shift();
-        const rawCard = card.text;
+        let rawCard = card.text;
         const type = card.type?.toLowerCase() || "conflict";
         const severity = card.severity?.toLowerCase() || "casual";
 
-        let cardText = rawCard;
-        if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
+        if (rawCard.includes("[player1]") || rawCard.includes("[player2]")) {
           const shuffled = players.sort(() => 0.5 - Math.random());
-          cardText = cardText
+          rawCard = rawCard
             .replace("[player1]", shuffled[0] || "Player 1")
             .replace("[player2]", shuffled[1] || "Player 2");
         }
 
         const backURL = `images/ui/${type}-${severity}.jpg`;
-        const slug = rawCard.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+        const slug = card.text.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
         const frontImagePath = `images/cards/${slug}.jpg`;
 
-        const img = new Image();
-        img.src = frontImagePath;
-        img.onload = () => {
-          nextCardData = { backURL, frontContent: frontImagePath };
-        };
-        img.onerror = () => {
-          nextCardData = { backURL, frontContent: cardText };
+        const hasImage = await imageExists(frontImagePath);
+        nextCardData = {
+          backURL,
+          frontContent: hasImage ? frontImagePath : rawCard
         };
 
         currentRound++;
