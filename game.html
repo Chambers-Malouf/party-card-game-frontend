@@ -101,13 +101,11 @@
     <button onclick="startNewGame()">Start New Game</button>
   </div>
   <div id="result"></div>
-
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get("mode") || "party";
     const totalRounds = parseInt(urlParams.get("rounds")) || 10;
     const players = JSON.parse(localStorage.getItem("playerNames") || "[]");
-
     let currentRound = 0;
     let availableCards = [];
     let flipped = false;
@@ -128,6 +126,10 @@
       "The sober sniper: [player2]",
       "Most likely to text their ex tonight: [player1]"
     ];
+
+    const customCardImages = {
+      "Still in love with your ex? Finish your drink.": "still_in_love_with_ex_running.jpg"
+    };
 
     const votes = {};
     const loadingOverlay = document.getElementById("loadingOverlay");
@@ -168,7 +170,6 @@
         showEndSequence();
         return;
       }
-
       if ((currentRound > 0) && (currentRound % 5 === 0)) {
         const penalty = penaltyPrompts[Math.floor(Math.random() * penaltyPrompts.length)];
         nextCardData = {
@@ -187,7 +188,9 @@
         });
         const data = await response.json();
         if (!data.length) throw new Error("No cards returned");
-        if (!availableCards.length) availableCards = data;
+        if (!availableCards.length) {
+          availableCards = data;
+        }
 
         const card = availableCards.shift();
         const rawCard = card.text;
@@ -198,15 +201,18 @@
 
         let cardText = rawCard;
         if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
-          const shuffled = [...players].sort(() => 0.5 - Math.random());
+          const shuffled = players.sort(() => 0.5 - Math.random());
           cardText = cardText
             .replace("[player1]", shuffled[0] || "Player 1")
             .replace("[player2]", shuffled[1] || "Player 2");
         }
 
-        const cardBackURL = `images/ui/${type}-${severity}.jpg`;
-        nextCardData = { backURL: cardBackURL, text: cardText };
+        let cardBackURL = `images/ui/${type}-${severity}.jpg`;
+        if (customCardImages[rawCard]) {
+          cardBackURL = `images/cards/${customCardImages[rawCard]}`;
+        }
 
+        nextCardData = { backURL: cardBackURL, text: cardText };
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
       } catch (error) {
         nextCardData = {
