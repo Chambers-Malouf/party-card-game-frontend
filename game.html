@@ -57,24 +57,16 @@
     }
     .card-front {
       transform: rotateY(180deg);
-      background: #111;
-      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      font-size: 1.2em;
       overflow: hidden;
-    }
-    .card-front.image-card {
       background: none;
-      padding: 0;
-      display: block;
     }
     .card-front img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
       border-radius: 10px;
     }
     #loadingOverlay {
@@ -113,6 +105,7 @@
     <button onclick="startNewGame()">Start New Game</button>
   </div>
   <div id="result"></div>
+
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get("mode") || "party";
@@ -145,16 +138,15 @@
 
     async function setupCard(backURL, frontContent) {
       loadingOverlay.style.display = "none";
-      const isImageCard = frontContent.includes("images/cards/");
-      const frontHTML = isImageCard
+      const frontHTML = frontContent.includes("images/cards/")
         ? `<img src='${frontContent}' alt='Card Image'>`
-        : frontContent;
+        : `<div style="background:#111; color:white; padding:20px; border-radius:10px; font-size:1.2em;">${frontContent}</div>`;
 
       document.getElementById("result").innerHTML = `
         <div class="card-container">
           <div class="card" id="gameCard">
             <div class="card-side card-back" style="background-image: url('${backURL}')"></div>
-            <div class="card-side card-front${isImageCard ? ' image-card' : ''}" id="cardFront">${frontHTML}</div>
+            <div class="card-side card-front" id="cardFront">${frontHTML}</div>
           </div>
         </div>
       `;
@@ -207,14 +199,13 @@
         if (!availableCards.length) availableCards = data;
 
         const card = availableCards.shift();
-        const rawCard = card.text;
+        let rawCard = card.text;
         const type = card.type?.toLowerCase() || "conflict";
         const severity = card.severity?.toLowerCase() || "casual";
 
-        let cardText = rawCard;
-        if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
+        if (rawCard.includes("[player1]") || rawCard.includes("[player2]")) {
           const shuffled = players.sort(() => 0.5 - Math.random());
-          cardText = cardText
+          rawCard = rawCard
             .replace("[player1]", shuffled[0] || "Player 1")
             .replace("[player2]", shuffled[1] || "Player 2");
         }
@@ -223,14 +214,18 @@
         const slug = rawCard.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
         const frontImagePath = `images/cards/${slug}.jpg`;
 
-        const testImg = new Image();
-        testImg.src = frontImagePath;
-        testImg.onload = () => {
-          nextCardData = { backURL, frontContent: frontImagePath };
-        };
-        testImg.onerror = () => {
-          nextCardData = { backURL, frontContent: cardText };
-        };
+        await new Promise(resolve => {
+          const img = new Image();
+          img.src = frontImagePath;
+          img.onload = () => {
+            nextCardData = { backURL, frontContent: frontImagePath };
+            resolve();
+          };
+          img.onerror = () => {
+            nextCardData = { backURL, frontContent: rawCard };
+            resolve();
+          };
+        });
 
         currentRound++;
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
@@ -264,6 +259,7 @@
         <p>${roast}</p>
         <div id="voteArea"><h3>Who owned the night?</h3></div>
       `;
+
       const voteArea = document.getElementById("voteArea");
       players.forEach(p => {
         const btn = document.createElement("button");
