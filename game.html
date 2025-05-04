@@ -215,25 +215,19 @@
 
         const backURL = `images/ui/${type}-${severity}.jpg`;
 
-        // Generate a slug from the card text
         const slug = rawCard.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
-
-        // Manual override mapping for known mismatches
         const imageOverrides = {
           "still_in_love_with_your_ex_finish_your_drink": "still_in_love_with_ex_running.jpg"
         };
-
         const frontImageFile = imageOverrides[slug] || `${slug}.jpg`;
         const frontImagePath = `images/cards/${frontImageFile}`;
 
-        const img = new Image();
-        img.src = frontImagePath;
-        img.onload = () => {
+        try {
+          await preloadCardImage(frontImagePath);
           nextCardData = { backURL, frontContent: frontImagePath };
-        };
-        img.onerror = () => {
+        } catch {
           nextCardData = { backURL, frontContent: cardText };
-        };
+        }
 
         currentRound++;
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
@@ -246,11 +240,11 @@
     }
 
     function preloadCardImage(url) {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         const img = new Image();
         img.src = url;
         img.onload = resolve;
-        img.onerror = resolve;
+        img.onerror = reject;
       });
     }
 
@@ -267,7 +261,6 @@
         <p>${roast}</p>
         <div id="voteArea"><h3>Who owned the night?</h3></div>
       `;
-
       const voteArea = document.getElementById("voteArea");
       players.forEach(p => {
         const btn = document.createElement("button");
