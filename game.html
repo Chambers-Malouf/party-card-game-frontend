@@ -101,11 +101,13 @@
     <button onclick="startNewGame()">Start New Game</button>
   </div>
   <div id="result"></div>
+
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get("mode") || "party";
     const totalRounds = parseInt(urlParams.get("rounds")) || 10;
     const players = JSON.parse(localStorage.getItem("playerNames") || "[]");
+
     let currentRound = 0;
     let availableCards = [];
     let flipped = false;
@@ -166,6 +168,7 @@
         showEndSequence();
         return;
       }
+
       if ((currentRound > 0) && (currentRound % 5 === 0)) {
         const penalty = penaltyPrompts[Math.floor(Math.random() * penaltyPrompts.length)];
         nextCardData = {
@@ -185,16 +188,17 @@
         const data = await response.json();
         if (!data.length) throw new Error("No cards returned");
         if (!availableCards.length) availableCards = data;
-        const rawCard = availableCards.shift();
-        currentRound++;
 
-        const typeMatch = rawCard.match(/\[(.*?)\]/g);
-        const type = typeMatch?.[0]?.replace(/\[|\]/g, "").toLowerCase() || "conflict";
-        const severity = typeMatch?.[1]?.replace(/\[|\]/g, "").toLowerCase() || "casual";
+        const card = availableCards.shift();
+        const rawCard = card.text;
+        const type = card.type?.toLowerCase() || "conflict";
+        const severity = card.severity?.toLowerCase() || "casual";
+
+        currentRound++;
 
         let cardText = rawCard;
         if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
-          const shuffled = players.sort(() => 0.5 - Math.random());
+          const shuffled = [...players].sort(() => 0.5 - Math.random());
           cardText = cardText
             .replace("[player1]", shuffled[0] || "Player 1")
             .replace("[player2]", shuffled[1] || "Player 2");
@@ -202,6 +206,7 @@
 
         const cardBackURL = `images/ui/${type}-${severity}.jpg`;
         nextCardData = { backURL: cardBackURL, text: cardText };
+
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
       } catch (error) {
         nextCardData = {
