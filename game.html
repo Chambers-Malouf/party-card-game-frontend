@@ -55,6 +55,22 @@
       background-size: cover;
       background-position: center;
     }
+    .card-front {
+      transform: rotateY(180deg);
+      background: #111;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-size: 1.2em;
+      overflow: hidden;
+    }
+    .card-front img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 10px;
+    }
     #loadingOverlay {
       position: fixed;
       top: 0;
@@ -97,7 +113,6 @@
     const mode = urlParams.get("mode") || "party";
     const totalRounds = parseInt(urlParams.get("rounds")) || 10;
     const players = JSON.parse(localStorage.getItem("playerNames") || "[]");
-
     let currentRound = 0;
     let availableCards = [];
     let flipped = false;
@@ -123,21 +138,17 @@
     const loadingOverlay = document.getElementById("loadingOverlay");
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
-    async function setupCard(cardBackURL, cardText) {
+    async function setupCard(backURL, frontContent) {
       loadingOverlay.style.display = "none";
-      const customImage = nextCardData.customImageURL;
-
-      const frontStyle = customImage
-        ? `background-image: url('${customImage}'); background-size: cover; background-position: center;`
-        : "background: #111; color: white; display: flex; align-items: center; justify-content: center; padding: 20px; font-size: 1.2em;";
-
-      const frontContent = customImage ? "" : cardText;
+      const frontHTML = frontContent.includes("images/cards/")
+        ? `<img src='${frontContent}' alt='Card Image'>`
+        : frontContent;
 
       document.getElementById("result").innerHTML = `
         <div class="card-container">
           <div class="card" id="gameCard">
-            <div class="card-side card-back" style="background-image: url('${cardBackURL}')"></div>
-            <div class="card-side card-front" style="${frontStyle}" id="cardFront">${frontContent}</div>
+            <div class="card-side card-back" style="background-image: url('${backURL}')"></div>
+            <div class="card-side card-front" id="cardFront">${frontHTML}</div>
           </div>
         </div>
       `;
@@ -156,7 +167,7 @@
           setTimeout(async () => {
             await prepareNextCard();
             preloadCardImage(nextCardData.backURL).then(() => {
-              setupCard(nextCardData.backURL, nextCardData.text);
+              setupCard(nextCardData.backURL, nextCardData.frontContent);
             });
           }, 1000);
         }
@@ -173,8 +184,7 @@
         const penalty = penaltyPrompts[Math.floor(Math.random() * penaltyPrompts.length)];
         nextCardData = {
           backURL: "images/ui/penaltycard.jpg",
-          text: `<b>Penalty Round!</b><br>${penalty}`,
-          customImageURL: null
+          frontContent: `<b>Penalty Round!</b><br>${penalty}`
         };
         currentRound++;
         return;
@@ -188,16 +198,12 @@
         });
         const data = await response.json();
         if (!data.length) throw new Error("No cards returned");
-        if (!availableCards.length) {
-          availableCards = data;
-        }
+        if (!availableCards.length) availableCards = data;
 
         const card = availableCards.shift();
         const rawCard = card.text;
         const type = card.type?.toLowerCase() || "conflict";
         const severity = card.severity?.toLowerCase() || "casual";
-
-        currentRound++;
 
         let cardText = rawCard;
         if (cardText.includes("[player1]") || cardText.includes("[player2]")) {
@@ -207,28 +213,36 @@
             .replace("[player2]", shuffled[1] || "Player 2");
         }
 
-        // Check if we have a matching image for this exact card
-        const imageFilename = rawCard
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "_")
-          .replace(/^_+|_+$/g, "");
+        const backURL = `images/ui/${type}-${severity}.jpg`;
+        const slug = rawCard.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+        const frontImagePath = `images/cards/${slug}.jpg`;
 
-        const customImagePath = `images/cards/${imageFilename}.jpg`;
-        const cardBackURL = `images/ui/${type}-${severity}.jpg`;
-
-        nextCardData = {
-          backURL: cardBackURL,
-          text: cardText,
-          customImageURL: imageFilename === "still_in_love_with_your_ex_finish_your_drink" ? customImagePath : null
+        const img = new Image();
+        img.src = frontImagePath;
+        img.onload = () => {
+          nextCardData = { backURL, frontContent: frontImagePath };
+        };
+        img.onerror = () => {
+          nextCardData = { backURL, frontContent: cardText };
         };
 
+        currentRound++;
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
       } catch (error) {
         nextCardData = {
           backURL: "",
-          text: "Error: " + error.message
+          frontContent: "Error: " + error.message
         };
       }
+    }
+
+    function preloadCardImage(url) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
     }
 
     function showEndSequence() {
@@ -267,15 +281,6 @@
       });
     }
 
-    function preloadCardImage(url) {
-      return new Promise(resolve => {
-        const img = new Image();
-        img.src = url;
-        img.onload = resolve;
-        img.onerror = resolve;
-      });
-    }
-
     function startNewGame() {
       const useSame = confirm("Start a new game with the same players?");
       window.location.href = useSame ? "game-setup.html" : "player-setup.html";
@@ -284,7 +289,7 @@
     loadingOverlay.style.display = "flex";
     prepareNextCard().then(() => {
       preloadCardImage(nextCardData.backURL).then(() => {
-        setupCard(nextCardData.backURL, nextCardData.text);
+        setupCard(nextCardData.backURL, nextCardData.frontContent);
       });
     });
   </script>
