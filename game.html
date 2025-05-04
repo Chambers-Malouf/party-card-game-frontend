@@ -55,16 +55,6 @@
       background-size: cover;
       background-position: center;
     }
-    .card-front {
-      transform: rotateY(180deg);
-      background: #111;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      font-size: 1.2em;
-    }
     #loadingOverlay {
       position: fixed;
       top: 0;
@@ -101,11 +91,13 @@
     <button onclick="startNewGame()">Start New Game</button>
   </div>
   <div id="result"></div>
+
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get("mode") || "party";
     const totalRounds = parseInt(urlParams.get("rounds")) || 10;
     const players = JSON.parse(localStorage.getItem("playerNames") || "[]");
+
     let currentRound = 0;
     let availableCards = [];
     let flipped = false;
@@ -127,26 +119,32 @@
       "Most likely to text their ex tonight: [player1]"
     ];
 
-    const customCardImages = {
-      "Still in love with your ex? Finish your drink.": "still_in_love_with_ex_running.jpg"
-    };
-
     const votes = {};
     const loadingOverlay = document.getElementById("loadingOverlay");
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
     async function setupCard(cardBackURL, cardText) {
       loadingOverlay.style.display = "none";
+      const customImage = nextCardData.customImageURL;
+
+      const frontStyle = customImage
+        ? `background-image: url('${customImage}'); background-size: cover; background-position: center;`
+        : "background: #111; color: white; display: flex; align-items: center; justify-content: center; padding: 20px; font-size: 1.2em;";
+
+      const frontContent = customImage ? "" : cardText;
+
       document.getElementById("result").innerHTML = `
         <div class="card-container">
           <div class="card" id="gameCard">
             <div class="card-side card-back" style="background-image: url('${cardBackURL}')"></div>
-            <div class="card-side card-front" id="cardFront">${cardText}</div>
+            <div class="card-side card-front" style="${frontStyle}" id="cardFront">${frontContent}</div>
           </div>
         </div>
       `;
+
       const cardEl = document.getElementById("gameCard");
       flipped = false;
+
       cardEl.addEventListener("click", async () => {
         if (!flipped) {
           cardEl.classList.add("flipped");
@@ -170,11 +168,13 @@
         showEndSequence();
         return;
       }
+
       if ((currentRound > 0) && (currentRound % 5 === 0)) {
         const penalty = penaltyPrompts[Math.floor(Math.random() * penaltyPrompts.length)];
         nextCardData = {
           backURL: "images/ui/penaltycard.jpg",
-          text: `<b>Penalty Round!</b><br>${penalty}`
+          text: `<b>Penalty Round!</b><br>${penalty}`,
+          customImageURL: null
         };
         currentRound++;
         return;
@@ -207,12 +207,21 @@
             .replace("[player2]", shuffled[1] || "Player 2");
         }
 
-        let cardBackURL = `images/ui/${type}-${severity}.jpg`;
-        if (customCardImages[rawCard]) {
-          cardBackURL = `images/cards/${customCardImages[rawCard]}`;
-        }
+        // Check if we have a matching image for this exact card
+        const imageFilename = rawCard
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "_")
+          .replace(/^_+|_+$/g, "");
 
-        nextCardData = { backURL: cardBackURL, text: cardText };
+        const customImagePath = `images/cards/${imageFilename}.jpg`;
+        const cardBackURL = `images/ui/${type}-${severity}.jpg`;
+
+        nextCardData = {
+          backURL: cardBackURL,
+          text: cardText,
+          customImageURL: imageFilename === "still_in_love_with_your_ex_finish_your_drink" ? customImagePath : null
+        };
+
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
       } catch (error) {
         nextCardData = {
