@@ -1,4 +1,4 @@
-#made by chambers Malouf 
+<!-- #made by chambers Malouf -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -126,10 +126,10 @@
       const overlay = nameOverlayStyles[imageName];
       if (overlay) {
         if (overlay.player1) {
-          overlayHTML += `<div class="player-name" style="top: ${overlay.player1.top}; left: ${overlay.player1.left};">${name1}</div>`;
+          overlayHTML += `<div class="player-name" style="top: ${overlay.player1.top}; left: ${overlay.player1.left}; font-size: ${overlay.player1.fontSize};">${name1}</div>`;
         }
         if (overlay.player2) {
-          overlayHTML += `<div class="player-name" style="top: ${overlay.player2.top}; left: ${overlay.player2.left};">${name2}</div>`;
+          overlayHTML += `<div class="player-name" style="top: ${overlay.player2.top}; left: ${overlay.player2.left}; font-size: ${overlay.player2.fontSize};">${name2}</div>`;
         }
       }
 
