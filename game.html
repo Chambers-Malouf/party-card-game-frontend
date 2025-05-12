@@ -138,7 +138,7 @@
 
     async function setupCard(backURL, frontContent) {
       loadingOverlay.style.display = "none";
-      const frontHTML = frontContent.includes("images/cards/")
+      const frontHTML = frontContent.includes("party-images/card-frontsides")
         ? `<img src='${frontContent}' alt='Card Image'>`
         : `<div style="background:#111; color:white; padding:20px; border-radius:10px; font-size:1.2em;">${frontContent}</div>`;
 
