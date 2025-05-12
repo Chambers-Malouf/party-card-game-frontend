@@ -22,3 +22,80 @@ const cardImageMap = {
   "[player1], Read your last flirtatious message out loud or take 3 sips.": "risky_text.jpg",
   "[player1], What's a compliment you've never forgotten?": "ask_personal_questions.jpg"
 };
+const nameOverlayStyles = {
+  "ask_last_lie.jpg": {
+    player1: { top: "30%", left: "20%" },
+    player2: { top: "46%", left: "20%" }
+  },
+  "ask_personal_questions.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "bodyshot.jpg": {
+    player1: { top: "30%", left: "20%" },
+    player2: { top: "46%", left: "20%" }
+  },
+  "bought_a_planb.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "call_snapchat.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "do_a_valid_pushup.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "drink_for_situationship.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "first_impression.jpg": {
+    player1: { top: "30%", left: "20%" },
+    player2: { top: "46%", left: "20%" }
+  },
+  "give_dare_or_drink.jpg": {
+    player1: { top: "30%", left: "20%" },
+    player2: { top: "46%", left: "20%" }
+  },
+  "give_phone_dare.jpg": {
+    player1: { top: "30%", left: "20%" },
+    player2: { top: "46%", left: "20%" }
+  },
+  "guess_body_count.jpg": {
+    player1: { top: "30%", left: "20%" },
+    player2: { top: "46%", left: "20%" }
+  },
+  "invent_a_drinking_rule_everyone_follows_it.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "kiss_situationship_or_friend.jpg": {
+    player1: { top: "30%", left: "20%" },
+    player2: { top: "46%", left: "20%" }
+  },
+  "let_someone_decide_drink.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "mystery_drink.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "never_drinking_again.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "pregnancy_scare.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "rate_flirting_ability.jpg": {
+    player1: { top: "30%", left: "20%" },
+    player2: { top: "46%", left: "20%" }
+  },
+  "risky_text.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "still_in_love_with_ex_running.jpg": {
+    player1: { top: "30%", left: "20%" }
+  },
+  "whisper_question.jpg": {
+    player1: { top: "30%", left: "20%" },
+    player2: { top: "46%", left: "20%" }
+  },
+  "you_a_bitch.jpg": {
+    player1: { top: "30%", left: "20%" }
+  }
+};
