@@ -27,12 +27,12 @@ const cardImageMap = {
 
 const nameOverlayStyles = {
   "ask_last_lie.jpg": {
-    player1: { top: "30%", left: "20%", fontSize: "14px" },
-    player2: { top: "46%", left: "20%", fontSize: "14px" }
+    player1: { top: "60%", left: "20%", fontSize: "14px" },
+    player2: { top: "60%", left: "55%", fontSize: "14px" }
   },
   "ask_personal_questions.jpg": {
-    player1: { top: "14%", left: "20%", fontSize: "14px" },
-    player2: { top: "14%", left: "70%", fontSize: "14px" }
+    player1: { top: "30%", left: "30", fontSize: "14px" },
+    player2: { top: "30%", left: "65%", fontSize: "14px" }
   },
   "bodyshot.jpg": {
     player1: { top: "60%", left: "22%", fontSize: "16px" }
@@ -48,19 +48,19 @@ const nameOverlayStyles = {
     player2: { top: "14%", left: "70%", fontSize: "14px" }
   },
   "give_dare_or_drink.jpg": {
-    player1: { top: "15%", left: "18%", fontSize: "14px" },
-    player2: { top: "15%", left: "75%", fontSize: "14px" }
+    player1: { top: "40%", left: "25%", fontSize: "14px" },
+    player2: { top: "40%", left: "65%", fontSize: "14px" }
   },
   "give_phone_dare.jpg": {
-    player1: { top: "28%", left: "25%", fontSize: "14px" },
-    player2: { top: "44%", left: "25%", fontSize: "14px" }
+    player1: { top: "60%", left: "15%", fontSize: "14px" },
+    player2: { top: "70%", left: "25%", fontSize: "14px" }
   },
   "guess_body_count.jpg": {
-    player1: { top: "70%", left: "10%", fontSize: "14px" },
-    player2: { top: "70%", left: "45%", fontSize: "14px" }
+    player1: { top: "60%", left: "17%", fontSize: "14px" },
+    player2: { top: "60%", left: "55%", fontSize: "14px" }
   },
   "invent_a_drinking_rule_everyone_follows_it.jpg": {
-    player1: { top: "10%", left: "45%", fontSize: "16px" }
+    player1: { top: "40%", left: "40%", fontSize: "16px" }
   },
   "kiss_situationship_or_friend.jpg": {
     player1: { top: "60%", left: "30%", fontSize: "14px" },
@@ -73,8 +73,8 @@ const nameOverlayStyles = {
     player1: { top: "30%", left: "28%", fontSize: "16px" }
   },
   "rate_flirting_ability.jpg": {
-    player1: { top: "32%", left: "26%", fontSize: "14px" },
-    player2: { top: "32%", left: "74%", fontSize: "14px" }
+    player1: { top: "70%", left: "30%", fontSize: "14px" },
+    player2: { top: "70%", left: "65%", fontSize: "14px" }
   },
   "whisper_question.jpg": {
     player1: { top: "24%", left: "32%", fontSize: "14px" },
