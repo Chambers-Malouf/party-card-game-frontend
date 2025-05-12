@@ -84,6 +84,7 @@
       z-index: 9999;
     }
   </style>
+  <script src="cardImages.js"></script>
 </head>
 <body>
   <div id="loadingOverlay">Loading Next Card...</div>
@@ -102,46 +103,39 @@
     let currentRound = 0;
     let availableCards = [];
     let flipped = false;
-    let nextCard = { text: "", image: "", back: "" };
+    let nextCardText = "";
 
     const loadingOverlay = document.getElementById("loadingOverlay");
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
-    async function setupCard(backURL) {
+    async function setupCard(backURL, frontContent) {
       loadingOverlay.style.display = "none";
+      const frontHTML = frontContent.includes("images/cards/")
+        ? `<img src='${frontContent}' alt='Card Image'>`
+        : `<div style="background:#111; color:white; padding:20px; border-radius:10px; font-size:1.2em;">${frontContent}</div>`;
 
       document.getElementById("result").innerHTML = `
         <div class="card-container">
           <div class="card" id="gameCard">
             <div class="card-side card-back" style="background-image: url('${backURL}')"></div>
-            <div class="card-side card-front" id="cardFront"></div>
+            <div class="card-side card-front" id="cardFront">${frontHTML}</div>
           </div>
         </div>
       `;
 
       const cardEl = document.getElementById("gameCard");
-      const frontEl = document.getElementById("cardFront");
       flipped = false;
 
       cardEl.addEventListener("click", async () => {
         if (!flipped) {
           cardEl.classList.add("flipped");
           flipped = true;
-
-          setTimeout(() => {
-            if (nextCard.image) {
-              frontEl.innerHTML = `<img src="${nextCard.image}" alt="Card Image">`;
-            } else {
-              frontEl.innerHTML = `<div style="background:#111; color:white; padding:20px; border-radius:10px; font-size:1.2em;">${nextCard.text}</div>`;
-            }
-          }, 300);
         } else {
           cardEl.classList.remove("flipped");
           flipped = false;
           loadingOverlay.style.display = "flex";
           setTimeout(async () => {
             await prepareNextCard();
-            setupCard(nextCard.back);
           }, 1000);
         }
       });
@@ -173,26 +167,34 @@
             .replace("[player2]", shuffled[1] || "Player 2");
         }
 
-        const slug = rawCard.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
-        const frontImagePath = `images/cards/${slug}.jpg`;
+        const slug = cardImageMap[card.text] || "";
+        const frontImagePath = slug ? `images/cards/${slug}` : "";
         const backImagePath = `images/ui/${card.type}-${card.severity}.jpg`;
 
-        nextCard = {
-          text: rawCard,
-          image: frontImagePath,
-          back: backImagePath
-        };
-
+        nextCardText = rawCard;
         currentRound++;
         document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds - currentRound}`;
 
+        if (frontImagePath) {
+          await preloadCardImage(frontImagePath);
+          setupCard(backImagePath, frontImagePath);
+        } else {
+          setupCard(backImagePath, rawCard);
+        }
+
       } catch (error) {
-        nextCard = {
-          text: "Error: " + error.message,
-          image: "",
-          back: "images/ui/conflict-casual.jpg"
-        };
+        nextCardText = "Error: " + error.message;
+        setupCard("images/ui/conflict-casual.jpg", nextCardText);
       }
+    }
+
+    function preloadCardImage(url) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
     }
 
     function startNewGame() {
@@ -201,9 +203,7 @@
     }
 
     loadingOverlay.style.display = "flex";
-    prepareNextCard().then(() => {
-      setupCard(nextCard.back);
-    });
+    prepareNextCard();
   </script>
 </body>
 </html>
