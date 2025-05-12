@@ -56,8 +56,8 @@ const nameOverlayStyles = {
     player2: { top: "44%", left: "25%", fontSize: "14px" }
   },
   "guess_body_count.jpg": {
-    player1: { top: "18%", left: "22%", fontSize: "14px" },
-    player2: { top: "18%", left: "70%", fontSize: "14px" }
+    player1: { top: "200%", left: "10%", fontSize: "14px" },
+    player2: { top: "200%", left: "200%", fontSize: "14px" }
   },
   "invent_a_drinking_rule_everyone_follows_it.jpg": {
     player1: { top: "10%", left: "45%", fontSize: "16px" }
