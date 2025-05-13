@@ -18,7 +18,7 @@ const cardImageMap = {
   "[player1], whisper something you've always wondered about [player2]. Answer out loud truthfully or finish your drink": "whisper_question.jpg",
   "[player1], ask [player2] the last thing they lied about.": "ask_last_lie.jpg",
   "[player1], give your phone to [player2] for 60 seconds — app of their choice.": "give_phone_dare.jpg",
-  "[player1], challenge [player2] to a sip-for-sip showdown — loser finishes their drink.": "bodyshot.jpg",
+  "[player1], take a body shot off someone of your choice.": "bodyshot.jpg",
   "[player1], Read your last flirtatious message out loud or take 3 sips.": "risky_text.jpg",
   "[player1], What's a compliment you've never forgotten?": "ask_personal_questions.jpg",
   "[player1], if you had to hook up with [player2] or your last situationship, who would you pick?": "kiss_situationship_or_friend.jpg",
@@ -26,61 +26,61 @@ const cardImageMap = {
 };
 
 const nameOverlayStyles = {
-  "ask_last_lie.jpg": {
-    player1: { top: "60%", left: "20%", fontSize: "14px" },
-    player2: { top: "60%", left: "55%", fontSize: "14px" }
-  },
-  "ask_personal_questions.jpg": {
-    player1: { top: "30%", left: "30", fontSize: "14px" },
-    player2: { top: "30%", left: "65%", fontSize: "14px" }
-  },
-  "bodyshot.jpg": {
-    player1: { top: "60%", left: "22%", fontSize: "16px" }
+  "do_a_valid_pushup.jpg": {
+    player1: { top: "70%", left: "50%", fontSize: "16px" }
   },
   "call_snapchat.jpg": {
-    player1: { top: "18%", left: "24%", fontSize: "16px" }
-  },
-  "do_a_valid_pushup.jpg": {
-    player1: { top: "22%", left: "45%", fontSize: "14px" }
-  },
-  "first_impression.jpg": {
-    player1: { top: "14%", left: "20%", fontSize: "14px" },
-    player2: { top: "14%", left: "70%", fontSize: "14px" }
-  },
-  "give_dare_or_drink.jpg": {
-    player1: { top: "40%", left: "25%", fontSize: "14px" },
-    player2: { top: "40%", left: "65%", fontSize: "14px" }
-  },
-  "give_phone_dare.jpg": {
-    player1: { top: "60%", left: "15%", fontSize: "14px" },
-    player2: { top: "70%", left: "25%", fontSize: "14px" }
-  },
-  "guess_body_count.jpg": {
-    player1: { top: "60%", left: "17%", fontSize: "14px" },
-    player2: { top: "60%", left: "55%", fontSize: "14px" }
-  },
-  "invent_a_drinking_rule_everyone_follows_it.jpg": {
-    player1: { top: "40%", left: "40%", fontSize: "16px" }
-  },
-  "kiss_situationship_or_friend.jpg": {
-    player1: { top: "60%", left: "30%", fontSize: "14px" },
-    player2: { top: "60%", left: "70%", fontSize: "14px" }
-  },
-  "let_someone_decide_drink.jpg": {
-    player1: { top: "26%", left: "28%", fontSize: "16px" }
+    player1: { top: "25%", left: "50%", fontSize: "16px" }
   },
   "mystery_drink.jpg": {
-    player1: { top: "30%", left: "28%", fontSize: "16px" }
+    player1: { top: "25%", left: "50%", fontSize: "16px" }
+  },
+  "let_someone_decide_drink.jpg": {
+    player1: { top: "25%", left: "40%", fontSize: "16px" }
+  },
+  "give_dare_or_drink.jpg": {
+    player1: { top: "15%", left: "35%" },
+    player2: { top: "15%", left: "65%" }
+  },
+  "guess_body_count.jpg": {
+    player1: { top: "22%", left: "25%", fontSize: "15px" },
+    player2: { top: "22%", left: "75%", fontSize: "15px" }
   },
   "rate_flirting_ability.jpg": {
-    player1: { top: "70%", left: "30%", fontSize: "14px" },
-    player2: { top: "70%", left: "65%", fontSize: "14px" }
-  },
-  "whisper_question.jpg": {
-    player1: { top: "24%", left: "32%", fontSize: "14px" },
-    player2: { top: "24%", left: "68%", fontSize: "14px" }
+    player1: { top: "20%", left: "30%", fontSize: "14px" },
+    player2: { top: "20%", left: "70%", fontSize: "14px" }
   },
   "you_a_bitch.jpg": {
-    player1: { top: "26%", left: "30%", fontSize: "16px" }
+    player1: { top: "15%", left: "30%", fontSize: "16px" }
+  },
+  "invent_a_drinking_rule_everyone_follows_it.jpg": {
+    player1: { top: "10%", left: "50%", fontSize: "16px" }
+  },
+  "first_impression.jpg": {
+    player1: { top: "20%", left: "30%", fontSize: "14px" },
+    player2: { top: "20%", left: "70%", fontSize: "14px" }
+  },
+  "whisper_question.jpg": {
+    player1: { top: "28%", left: "35%", fontSize: "14px" },
+    player2: { top: "28%", left: "65%", fontSize: "14px" }
+  },
+  "ask_last_lie.jpg": {
+    player1: { top: "20%", left: "30%", fontSize: "15px" },
+    player2: { top: "20%", left: "70%", fontSize: "15px" }
+  },
+  "give_phone_dare.jpg": {
+    player1: { top: "25%", left: "30%", fontSize: "14px" },
+    player2: { top: "25%", left: "70%", fontSize: "14px" }
+  },
+  "bodyshot.jpg": {
+    player1: { top: "22%", left: "50%", fontSize: "15px" }
+  },
+  "ask_personal_questions.jpg": {
+    player1: { top: "15%", left: "35%", fontSize: "14px" },
+    player2: { top: "15%", left: "65%", fontSize: "14px" }
+  },
+  "kiss_situationship_or_friend.jpg": {
+    player1: { top: "25%", left: "30%", fontSize: "14px" },
+    player2: { top: "25%", left: "70%", fontSize: "14px" }
   }
 };

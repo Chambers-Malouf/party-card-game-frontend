@@ -1,4 +1,4 @@
-<!-- #made by chambers Malouf -->
+<!-- made by Chambers Malouf -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,7 +31,7 @@
       perspective: 1000px;
       margin: auto;
       width: 300px;
-      height: 450px;
+      height: 480px;
       position: relative;
       cursor: pointer;
     }
@@ -59,17 +59,28 @@
     .card-front {
       transform: rotateY(180deg);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       overflow: hidden;
       background: none;
       position: relative;
+      padding-top: 10px;
     }
     .card-front img {
       max-width: 100%;
-      max-height: 100%;
+      height: auto;
       object-fit: contain;
       border-radius: 10px;
+    }
+    .overlay-text {
+      margin-top: 10px;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px black;
+      padding: 10px;
+      max-width: 90%;
     }
     .player-name {
       position: absolute;
@@ -119,23 +130,25 @@
     const loadingOverlay = document.getElementById("loadingOverlay");
     document.getElementById("modeTitle").textContent = `Game Mode: ${mode} | Rounds Left: ${totalRounds}`;
 
-    async function setupCard(backURL, frontContent, imageName, name1, name2) {
+    async function setupCard(backURL, frontImagePath, slug, name1, name2, rawText) {
       loadingOverlay.style.display = "none";
 
       let overlayHTML = "";
-      const overlay = nameOverlayStyles[imageName];
+      const overlay = nameOverlayStyles[slug];
       if (overlay) {
         if (overlay.player1) {
-          overlayHTML += `<div class="player-name" style="top: ${overlay.player1.top}; left: ${overlay.player1.left}; font-size: ${overlay.player1.fontSize};">${name1}</div>`;
+          overlayHTML += `<div class="player-name" style="top: ${overlay.player1.top}; left: ${overlay.player1.left}; font-size: ${overlay.player1.fontSize || '16px'}">${name1}</div>`;
         }
         if (overlay.player2) {
-          overlayHTML += `<div class="player-name" style="top: ${overlay.player2.top}; left: ${overlay.player2.left}; font-size: ${overlay.player2.fontSize};">${name2}</div>`;
+          overlayHTML += `<div class="player-name" style="top: ${overlay.player2.top}; left: ${overlay.player2.left}; font-size: ${overlay.player2.fontSize || '16px'}">${name2}</div>`;
         }
       }
 
-      const frontHTML = frontContent.includes("images/cards/")
-        ? `<img src='${frontContent}' alt='Card Image'>${overlayHTML}`
-        : `<div style="background:#111; color:white; padding:20px; border-radius:10px; font-size:1.2em;">${frontContent}</div>`;
+      const frontHTML = `
+        <img src='${frontImagePath}' alt='Card Image'>
+        ${overlayHTML}
+        <div class="overlay-text">${rawText}</div>
+      `;
 
       document.getElementById("result").innerHTML = `
         <div class="card-container">
@@ -182,20 +195,17 @@
 
         const card = availableCards.shift();
         let rawCard = card.text;
+        const slug = cardImageMap[card.text] || "";
+        const frontImagePath = slug ? `images/cards/${slug}` : "";
+        const backImagePath = `images/ui/${card.type}-${card.severity}.jpg`;
 
         const shuffled = [...players].sort(() => 0.5 - Math.random());
         const name1 = shuffled[0] || "Player 1";
         const name2 = shuffled[1] || "Player 2";
 
-        if (rawCard.includes("[player1]") || rawCard.includes("[player2]")) {
-          rawCard = rawCard
-            .replace("[player1]", name1)
-            .replace("[player2]", name2);
-        }
-
-        const slug = cardImageMap[card.text] || "";
-        const frontImagePath = slug ? `images/cards/${slug}` : "";
-        const backImagePath = `images/ui/${card.type}-${card.severity}.jpg`;
+        rawCard = rawCard
+          .replace("[player1]", name1)
+          .replace("[player2]", name2);
 
         nextCardText = rawCard;
         currentRound++;
@@ -203,14 +213,14 @@
 
         if (frontImagePath) {
           await preloadCardImage(frontImagePath);
-          setupCard(backImagePath, frontImagePath, slug, name1, name2);
+          setupCard(backImagePath, frontImagePath, slug, name1, name2, rawCard);
         } else {
-          setupCard(backImagePath, rawCard, "", name1, name2);
+          setupCard(backImagePath, "", "", name1, name2, rawCard);
         }
 
       } catch (error) {
         nextCardText = "Error: " + error.message;
-        setupCard("images/ui/conflict-casual.jpg", nextCardText, "", "Player 1", "Player 2");
+        setupCard("images/ui/conflict-casual.jpg", "", "", "Player 1", "Player 2", nextCardText);
       }
     }
 
