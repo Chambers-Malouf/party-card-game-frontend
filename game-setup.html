@@ -1,72 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Game Setup - Party Card Game</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Choose Game Mode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     body {
-      background: url('images/backgrounds/buckshot_tavern.jpg') center/cover no-repeat;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Press Start 2P', cursive;
+      background: linear-gradient(270deg, #1a1a1a, #2c003e, #4b004f);
+      background-size: 600% 600%;
+      animation: gradientShift 15s ease infinite;
       color: white;
+      text-align: center;
+      padding: 40px;
     }
-    h1 {
-      font-size: 2em;
-      color: #ffa500;
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
-    select {
-      font-size: 1.1em;
-      padding: 10px;
+
+    h2 {
+      margin-bottom: 30px;
+      text-shadow: 1px 1px 3px black;
+    }
+
+    select, input {
+      font-family: 'Press Start 2P', cursive;
+      padding: 12px;
       margin: 10px;
-      border-radius: 8px;
-    }
-    button {
-      margin-top: 20px;
-      padding: 12px 24px;
-      font-size: 1.2em;
+      font-size: 10px;
+      border-radius: 10px;
       border: none;
-      border-radius: 30px;
-      background-color: #ffa500;
-      color: #1c1c1c;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
+      text-align: center;
     }
+
+    button {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      padding: 12px 20px;
+      margin-top: 20px;
+      background: #8b00c9;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #8b00c9;
+      transition: 0.3s ease;
+    }
+
     button:hover {
-      background-color: #cc8400;
-      transform: scale(1.05);
+      background: #b400ff;
+      box-shadow: 0 0 20px #b400ff, 0 0 40px #b400ff;
     }
   </style>
 </head>
 <body>
-  <h1>Select Game Mode and Rounds</h1>
+  <h2>Choose Game Mode</h2>
 
-  <label for="mode">Game Mode:</label><br>
   <select id="mode">
-    <option value="party">Party</option>
-    <option value="chill">Chill</option>
-    <option value="nsfw">NSFW</option>
-    <option value="truthordrink">Truth or Drink</option>
-    <option value="drama">Drama</option>
-    <option value="duo">1 on 1 (2-person cards only)</option>
-    <option value="all">All Out (everything combined)</option>
-  </select>
-
-  <label for="rounds">Number of Rounds:</label><br>
-  <select id="rounds">
-    <option value="10">10</option>
-    <option value="15">15</option>
-    <option value="20">20</option>
-  </select><br><br>
-
-  <button onclick="startGame()">Start Game</button>
-
-  <script>
-    function startGame() {
-      const mode = document.getElementById("mode").value;
-      const rounds = document.getElementById("rounds").value;
-      window.location.href = `game.html?mode=${mode}&rounds=${rounds}`;
-    }
-  </script>
-</body>
-</html>
+    <option value="party">Party Mode</option>
+    <option value="drama">Drama Mode</option>
+    <option value="truthordrink">Truth or Drin

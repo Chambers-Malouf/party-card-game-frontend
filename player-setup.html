@@ -1,115 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Custom Setup - Party Card Game</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Players</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     body {
-      background: url('images/backgrounds/buckshot_tavern.jpg') center/cover no-repeat;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Press Start 2P', cursive;
+      background: linear-gradient(270deg, #1a1a1a, #2c003e, #4b004f);
+      background-size: 600% 600%;
+      animation: gradientShift 15s ease infinite;
       color: white;
-    }
-    h1 {
-      font-size: 2em;
-      color: #ffa500;
-    }
-    input, select {
-      padding: 10px;
-      font-size: 1em;
-      border-radius: 8px;
-      margin: 10px;
-      width: 250px;
       text-align: center;
+      padding: 40px;
     }
-    .player-name {
-      display: block;
-      margin: 10px auto;
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
-    button {
-      padding: 12px 24px;
-      font-size: 1.2em;
-      font-weight: bold;
+
+    h2 {
+      margin-bottom: 30px;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    input {
+      padding: 12px;
+      width: 260px;
+      border-radius: 10px;
       border: none;
-      border-radius: 30px;
-      background-color: #ffa500;
-      color: #1c1c1c;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
+      font-family: 'Press Start 2P', cursive;
+      text-align: center;
+      margin-bottom: 20px;
     }
+
+    button {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      padding: 12px 20px;
+      margin: 6px;
+      background: #8b00c9;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #8b00c9;
+      transition: all 0.3s ease;
+    }
+
     button:hover {
-      background-color: #cc8400;
-      transform: scale(1.05);
+      background: #b400ff;
+      box-shadow: 0 0 20px #b400ff, 0 0 40px #b400ff;
+    }
+
+    #playerList {
+      margin: 20px 0;
+      font-size: 10px;
+      line-height: 2em;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
   </style>
 </head>
 <body>
-  <h1>Enter Player Info</h1>
+  <h2>Enter Player Names</h2>
 
-  <label for="playerCount">Number of Players:</label><br>
-  <select id="playerCount" onchange="generateInputs()">
-    <option value="">Select</option>
-    <option value="2">2 Players</option>
-    <option value="3">3 Players</option>
-    <option value="4">4 Players</option>
-    <option value="5">5 Players</option>
-    <option value="6">6 Players</option>
-    <option value="7">7 Players</option>
-    <option value="8">8 Players</option>
-  </select>
+  <input type="text" id="playerName" placeholder="Enter name" maxlength="10" />
 
-  <div id="nameInputs"></div>
-  <button onclick="resetPlayers()" style="margin-top: 20px;">Reset Saved Players</button>
-  <button onclick="continueToSetup()">Continue</button>
+  <div class="button-group">
+    <button onclick="addPlayer()">Add Player</button>
+    <div id="playerList"></div>
+    <button onclick="continueToGame()">Continue</button>
+    <button onclick="resetPlayers()">Reset Players</button>
+  </div>
 
   <script>
-    function generateInputs() {
-      const count = parseInt(document.getElementById("playerCount").value);
-      const container = document.getElementById("nameInputs");
-      container.innerHTML = "";
+    let players = JSON.parse(localStorage.getItem("players")) || [];
 
-      for (let i = 0; i < count; i++) {
-        const input = document.createElement("input");
-        input.className = "player-name";
-        input.placeholder = `Player ${i + 1} Name`;
-        container.appendChild(input);
+    function addPlayer() {
+      const input = document.getElementById("playerName");
+      const name = input.value.trim();
+      if (name && name.length <= 10) {
+        players.push(name);
+        input.value = "";
+        updatePlayerList();
+        localStorage.setItem("players", JSON.stringify(players));
       }
     }
 
-    function continueToSetup() {
-      const nameInputs = document.querySelectorAll(".player-name");
-      const names = [];
+    function updatePlayerList() {
+      document.getElementById("playerList").innerHTML = players.map(p => `<div>${p}</div>`).join('');
+    }
 
-      for (const input of nameInputs) {
-        if (!input.value.trim()) {
-          alert("Please fill in all player names.");
-          return;
-        }
-        names.push(input.value.trim());
+    function continueToGame() {
+      if (players.length > 0) {
+        window.location.href = "game-setup.html";
       }
-
-      localStorage.setItem("playerNames", JSON.stringify(names));
-      window.location.href = "game-setup.html";
     }
 
     function resetPlayers() {
-      localStorage.removeItem("playerNames");
-      location.reload();
+      players = [];
+      localStorage.removeItem("players");
+      updatePlayerList();
     }
 
-    // Optional: preload saved names into inputs if they exist
-    const saved = JSON.parse(localStorage.getItem("playerNames") || "[]");
-    if (saved.length > 0) {
-      document.getElementById("playerCount").value = saved.length;
-      generateInputs();
-      setTimeout(() => {
-        const inputs = document.querySelectorAll(".player-name");
-        saved.forEach((name, index) => {
-          if (inputs[index]) inputs[index].value = name;
-        });
-      }, 50);
-    }
+    window.onload = updatePlayerList;
   </script>
 </body>
 </html>
