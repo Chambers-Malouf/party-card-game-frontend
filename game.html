@@ -164,11 +164,13 @@
       "you_a_bitch.jpg": { text: "<b>[player1]</b>, you are a bitch — take every punishment this round." }
     };
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const maxRounds = parseInt(urlParams.get("rounds")) || 10;
+
     const allCards = Object.keys(cardTextMap);
     let usedCards = [];
     let flipped = false;
     let currentRound = 1;
-    const maxRounds = 10;
     const playerNames = JSON.parse(localStorage.getItem("players")) || [];
 
     function flipCard() {
@@ -185,8 +187,9 @@
     }
 
     function showCard() {
+      const overlay = document.getElementById("cardText");
+
       if (currentRound > maxRounds) {
-        const overlay = document.getElementById("cardText");
         overlay.innerText = "Game over!";
         overlay.style.display = "block";
         return;
@@ -202,9 +205,8 @@
       const personalizedText = hasPlaceholders ? injectPlayerNames(rawText) : "";
 
       document.getElementById("cardImage").src = imagePath;
-      document.getElementById("roundDisplay").innerText = `Round ${currentRound}`;
+      document.getElementById("roundDisplay").innerText = `Round ${currentRound} of ${maxRounds}`;
 
-      const overlay = document.getElementById("cardText");
       if (hasPlaceholders && playerNames.length > 0) {
         overlay.innerHTML = personalizedText;
         overlay.style.display = "block";
