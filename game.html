@@ -1,4 +1,3 @@
-<!-- made by Chambers Malouf this better fukcing work-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -108,7 +107,7 @@
       text-shadow: 1px 1px 2px black;
       position: relative;
       top: -14px;
-      display: none; /* hidden by default */
+      display: none;
     }
 
     .round-counter {
@@ -141,10 +140,28 @@
 
   <script>
     const cardTextMap = {
-      "still_in_love_with_ex_running.jpg": "[player1], still in love with your ex? Finish your drink.",
-      "do_a_valid_pushup.jpg": "[player1], do 1 valid pushup. Group decides if it counts.",
-      "call_snapchat.jpg": "[player1], call the last person you Snapchatted and ask what they think of you.",
-      // Add all mappings...
+      "ask_last_lie.jpg": { text: "<b>[player1]</b>, ask <b>[player2]</b> the last thing they lied about." },
+      "ask_personal_questions.jpg": { text: "Take turns asking personal questions until someone folds and drinks." },
+      "bodyshot.jpg": { text: "<b>[player1]</b>, give a body shot off someone of your choice." },
+      "bought_a_planb.jpg": { text: "If you've taken/bought a Plan B in the past month, drink." },
+      "call_snapchat.jpg": { text: "<b>[player1]</b>, call the last person you Snapchatted and ask what they think of you." },
+      "do_a_valid_pushup.jpg": { text: "<b>[player1]</b>, do 1 valid push up, group decides if it counts." },
+      "drink_for_situationship.jpg": { text: "Drink for every situationship you've entertained this year." },
+      "first_impression.jpg": { text: "<b>[player1]</b>, explain your first impression of <b>[player2]</b>. Be honest." },
+      "give_dare_or_drink.jpg": { text: "<b>[player1]</b>, give <b>[player2]</b> a dare. If they refuse, they drink." },
+      "give_phone_dare.jpg": { text: "<b>[player1]</b>, give your phone to <b>[player2]</b> for 60 seconds. App of their choice." },
+      "guess_body_count.jpg": { text: "<b>[player1]</b>, guess <b>[player2]</b>'s body count. If they're offended, finish your drink." },
+      "invent_a_drinking_rule_everyone_follows_it.jpg": { text: "<b>[player1]</b>, invent a drinking rule — everyone follows it." },
+      "kiss_situationship_or_friend.jpg": { text: "<b>[player1]</b>, if you had to hook up with <b>[player2]</b> or your last situationship, who would you pick?" },
+      "let_someone_decide_drink.jpg": { text: "<b>[player1]</b>, let someone else decide how much you drink." },
+      "mystery_drink.jpg": { text: "<b>[player1]</b>, let someone pour a mystery drink. You drink it." },
+      "never_drinking_again.jpg": { text: "Finish your drink if you’ve ever said you aren’t drinking again." },
+      "pregnancy_scare.jpg": { text: "If you’ve had a pregnancy scare, finish your drink." },
+      "rate_flirting_ability.jpg": { text: "<b>[player1]</b>, rate <b>[player2]</b>’s flirting ability." },
+      "risky_text.jpg": { text: "Drink if you’ve sent a risky text in the past 48 hours." },
+      "still_in_love_with_ex_running.jpg": { text: "<b>[player1]</b>, still in love with your ex? Finish your drink." },
+      "whisper_question.jpg": { text: "<b>[player1]</b>, whisper something you’ve always wondered about <b>[player2]</b>. Answer truthfully or finish your drink." },
+      "you_a_bitch.jpg": { text: "<b>[player1]</b>, you are a bitch — take every punishment this round." }
     };
 
     const allCards = Object.keys(cardTextMap);
@@ -180,16 +197,16 @@
       usedCards.push(selected);
 
       const imagePath = `images/cards/${selected}`;
-      const rawText = cardTextMap[selected];
-      const personalizedText = injectPlayerNames(rawText);
-      const overlay = document.getElementById("cardText");
+      const rawText = cardTextMap[selected].text;
+      const hasPlaceholders = rawText.includes("[player1]") || rawText.includes("[player2]");
+      const personalizedText = hasPlaceholders ? injectPlayerNames(rawText) : "";
 
       document.getElementById("cardImage").src = imagePath;
       document.getElementById("roundDisplay").innerText = `Round ${currentRound}`;
 
-      const hasPlaceholders = rawText.includes("[player1]") || rawText.includes("[player2]");
+      const overlay = document.getElementById("cardText");
       if (hasPlaceholders && playerNames.length > 0) {
-        overlay.innerText = personalizedText;
+        overlay.innerHTML = personalizedText;
         overlay.style.display = "block";
       } else {
         overlay.innerText = "";
