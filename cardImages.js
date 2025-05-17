@@ -22,7 +22,8 @@ const cardImageMap = {
   "[player1], Read your last flirtatious message out loud or take 3 sips.": "risky_text.jpg",
   "[player1], What's a compliment you've never forgotten?": "ask_personal_questions.jpg",
   "[player1], if you had to hook up with [player2] or your last situationship, who would you pick?": "kiss_situationship_or_friend.jpg",
-  "[player1] and [player2], take turns asking personal questions until someone folds and drinks.": "ask_personal_questions.jpg"
+  "[player1] and [player2], take turns asking personal questions until someone folds and drinks.": "ask_personal_questions.jpg",
+  "Who is the biggest slut in the room?" : "slut_shame.jpg"
 };
 
 const nameOverlayStyles = {
