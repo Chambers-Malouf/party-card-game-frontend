@@ -146,7 +146,6 @@
   </style>
 </head>
 <body>
-
   <div class="round-counter" id="roundDisplay">Round 1</div>
 
   <div class="card-container" onclick="flipCard()">
@@ -166,158 +165,160 @@
     <button onclick="startNewGame()">🔁 Restart Game</button>
   </div>
 
-  <script>
-    const cardTextMap = {
-      "ask_last_lie.jpg": { text: "<b>[player1]</b>, ask <b>[player2]</b> the last thing they lied about." },
-      "ask_personal_questions.jpg": { text: "Take turns asking personal questions until someone folds and drinks." },
-      "bodyshot.jpg": { text: "<b>[player1]</b>, give a body shot off someone of your choice." },
-      "bought_a_planb.jpg": { text: "If you've taken/bought a Plan B in the past month, drink." },
-      "call_snapchat.jpg": { text: "<b>[player1]</b>, call the last person you Snapchatted and ask what they think of you." },
-      "do_a_valid_pushup.jpg": { text: "<b>[player1]</b>, do 1 valid push up, group decides if it counts." },
-      "drink_for_situationship.jpg": { text: "Drink for every situationship you've entertained this year." },
-      "first_impression.jpg": { text: "<b>[player1]</b>, explain your first impression of <b>[player2]</b>. Be honest." },
-      "give_dare_or_drink.jpg": { text: "<b>[player1]</b>, give <b>[player2]</b> a dare. If they refuse, they drink." },
-      "give_phone_dare.jpg": { text: "<b>[player1]</b>, give your phone to <b>[player2]</b> for 60 seconds. App of their choice." },
-      "guess_body_count.jpg": { text: "<b>[player1]</b>, guess <b>[player2]</b>'s body count. If they're offended, finish your drink." },
-      "invent_a_drinking_rule_everyone_follows_it.jpg": { text: "<b>[player1]</b>, invent a drinking rule — everyone follows it." },
-      "kiss_situationship_or_friend.jpg": { text: "<b>[player1]</b>, if you had to hook up with <b>[player2]</b> or your last situationship, who would you pick?" },
-      "let_someone_decide_drink.jpg": { text: "<b>[player1]</b>, let someone else decide how much you drink." },
-      "mystery_drink.jpg": { text: "<b>[player1]</b>, let someone pour a mystery drink. You drink it." },
-      "never_drinking_again.jpg": { text: "Finish your drink if you’ve ever said you aren’t drinking again." },
-      "pregnancy_scare.jpg": { text: "If you’ve had a pregnancy scare, finish your drink." },
-      "rate_flirting_ability.jpg": { text: "<b>[player1]</b>, rate <b>[player2]</b>’s flirting ability." },
-      "risky_text.jpg": { text: "Drink if you’ve sent a risky text in the past 48 hours." },
-      "still_in_love_with_ex_running.jpg": { text: "<b>[player1]</b>, still in love with your ex? Finish your drink." },
-      "slut_shame.jpg": {text: "Who is the biggest slut?", type: "voting"},
-      "whisper_question.jpg": { text: "<b>[player1]</b>, whisper something you’ve always wondered about <b>[player2]</b>. Answer truthfully or finish your drink." },
-      "you_a_bitch.jpg": { text: "<b>[player1]</b>, you are a bitch — take every punishment this round." }
+<script>
+const cardTextMap = {
+  "ask_last_lie.jpg": { text: "<b>[player1]</b>, ask <b>[player2]</b> the last thing they lied about.", type: "duo" },
+  "ask_personal_questions.jpg": { text: "Take turns asking personal questions until someone folds and drinks.", type: "duo" },
+  "bodyshot.jpg": { text: "<b>[player1]</b>, give a body shot off someone of your choice.", type: "solo" },
+  "bought_a_planb.jpg": { text: "If you've taken/bought a Plan B in the past month, drink.", type: "solo" },
+  "call_snapchat.jpg": { text: "<b>[player1]</b>, call the last person you Snapchatted and ask what they think of you.", type: "solo" },
+  "do_a_valid_pushup.jpg": { text: "<b>[player1]</b>, do 1 valid push up, group decides if it counts.", type: "solo" },
+  "drink_for_situationship.jpg": { text: "Drink for every situationship you've entertained this year.", type: "solo" },
+  "first_impression.jpg": { text: "<b>[player1]</b>, explain your first impression of <b>[player2]</b>. Be honest.", type: "duo" },
+  "give_dare_or_drink.jpg": { text: "<b>[player1]</b>, give <b>[player2]</b> a dare. If they refuse, they drink.", type: "duo" },
+  "give_phone_dare.jpg": { text: "<b>[player1]</b>, give your phone to <b>[player2]</b> for 60 seconds. App of their choice.", type: "duo" },
+  "guess_body_count.jpg": { text: "<b>[player1]</b>, guess <b>[player2]</b>'s body count. If they're offended, finish your drink.", type: "duo" },
+  "invent_a_drinking_rule_everyone_follows_it.jpg": { text: "<b>[player1]</b>, invent a drinking rule — everyone follows it.", type: "solo" },
+  "kiss_situationship_or_friend.jpg": { text: "<b>[player1]</b>, if you had to hook up with <b>[player2]</b> or your last situationship, who would you pick?", type: "duo" },
+  "let_someone_decide_drink.jpg": { text: "<b>[player1]</b>, let someone else decide how much you drink.", type: "solo" },
+  "mystery_drink.jpg": { text: "<b>[player1]</b>, let someone pour a mystery drink. You drink it.", type: "solo" },
+  "never_drinking_again.jpg": { text: "Finish your drink if you’ve ever said you aren’t drinking again.", type: "solo" },
+  "pregnancy_scare.jpg": { text: "If you’ve had a pregnancy scare, finish your drink.", type: "solo" },
+  "rate_flirting_ability.jpg": { text: "<b>[player1]</b>, rate <b>[player2]</b>’s flirting ability.", type: "duo" },
+  "risky_text.jpg": { text: "Drink if you’ve sent a risky text in the past 48 hours.", type: "solo" },
+  "still_in_love_with_ex_running.jpg": { text: "<b>[player1]</b>, still in love with your ex? Finish your drink.", type: "solo" },
+  "slut_shame.jpg": { text: "Who is the biggest slut?", type: "voting" },
+  "whisper_question.jpg": { text: "<b>[player1]</b>, whisper something you’ve always wondered about <b>[player2]</b>. Answer truthfully or finish your drink.", type: "duo" },
+  "you_a_bitch.jpg": { text: "<b>[player1]</b>, you are a bitch — take every punishment this round.", type: "solo" }
+};
+
+const urlParams = new URLSearchParams(window.location.search);
+const maxRounds = parseInt(urlParams.get("rounds")) || 10;
+const gameMode = urlParams.get("gamemode") || "classic";
+const playerNames = JSON.parse(localStorage.getItem("players")) || [];
+
+const allCards = Object.entries(cardTextMap).filter(([_, card]) => {
+  if (gameMode === "classic") return card.type === "solo" || card.type === "duo";
+  if (gameMode === "voting") return card.type === "voting";
+  if (gameMode === "versus") return card.type === "duo";
+  if (gameMode === "chaos") return true;
+  if (gameMode === "teams") return false; // team logic to be added later
+  return true;
+});
+
+let usedCards = [];
+let flipped = false;
+let currentRound = 1;
+function flipCard() {
+  const card = document.getElementById("card");
+  card.classList.toggle("flipped");
+  flipped = !flipped;
+
+  if (!flipped) {
+    setTimeout(() => {
+      currentRound++;
+      showCard();
+    }, 500);
+  }
+}
+
+function showCard() {
+  const overlay = document.getElementById("cardText");
+  document.querySelector(".voting-grid")?.remove();
+  document.querySelector(".vote-results")?.remove();
+
+  if (currentRound > maxRounds) {
+    overlay.innerText = "Game over!";
+    overlay.style.display = "block";
+    return;
+  }
+
+  const remaining = allCards.filter(([key]) => !usedCards.includes(key));
+  const [selected, cardData] = remaining[Math.floor(Math.random() * remaining.length)];
+  usedCards.push(selected);
+
+  const imagePath = `images/cards/${selected}`;
+  const rawText = cardData.text;
+  const personalizedText = rawText.includes("[player") ? injectPlayerNames(rawText) : rawText;
+
+  document.getElementById("cardImage").src = imagePath;
+  document.getElementById("roundDisplay").innerText = `Round ${currentRound} of ${maxRounds}`;
+  overlay.innerHTML = personalizedText;
+  overlay.style.display = "block";
+
+  if (cardData.type === "voting") showVotingGrid();
+}
+
+function injectPlayerNames(text) {
+  if (playerNames.length === 0) return text;
+  const p1 = playerNames[Math.floor(Math.random() * playerNames.length)];
+  let p2 = p1;
+  while (playerNames.length > 1 && p2 === p1) {
+    p2 = playerNames[Math.floor(Math.random() * playerNames.length)];
+  }
+  return text.replaceAll("[player1]", p1).replaceAll("[player2]", p2);
+}
+
+function showVotingGrid() {
+  const container = document.createElement("div");
+  container.classList.add("voting-grid");
+
+  const voteCounts = {};
+  playerNames.forEach(name => voteCounts[name] = 0);
+  let hasVoted = false;
+
+  playerNames.forEach(player => {
+    const btn = document.createElement("button");
+    btn.textContent = player;
+    btn.onclick = () => {
+      if (hasVoted) return;
+      hasVoted = true;
+      voteCounts[player]++;
+      displayVoteResults(voteCounts);
     };
+    container.appendChild(btn);
+  });
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const maxRounds = parseInt(urlParams.get("rounds")) || 10;
+  document.body.appendChild(container);
+}
 
-    const allCards = Object.keys(cardTextMap);
-    let usedCards = [];
-    let flipped = false;
-    let currentRound = 1;
-    const playerNames = JSON.parse(localStorage.getItem("players")) || [];
+function displayVoteResults(voteCounts) {
+  const resultDiv = document.createElement("div");
+  resultDiv.className = "vote-results";
 
-    function flipCard() {
-      const card = document.getElementById("card");
-      card.classList.toggle("flipped");
-      flipped = !flipped;
+  const entries = Object.entries(voteCounts);
+  const max = Math.max(...entries.map(([_, c]) => c));
+  const winners = entries.filter(([_, c]) => c === max).map(([n]) => n);
 
-      if (!flipped) {
-        setTimeout(() => {
-          currentRound++;
-          showCard();
-        }, 500);
-      }
-    }
+  entries.forEach(([name, count]) => {
+    const p = document.createElement("p");
+    p.innerText = `${name}: ${count} vote${count !== 1 ? 's' : ''}`;
+    resultDiv.appendChild(p);
+  });
 
-    function showCard() {
-      const overlay = document.getElementById("cardText");
-      document.querySelector(".voting-grid")?.remove();
-      document.querySelector(".vote-results")?.remove();
+  const winText = document.createElement("div");
+  winText.className = "winner";
+  winText.innerText = `🏆 Winner: ${winners.join(" & ")}`;
+  resultDiv.appendChild(winText);
 
-      if (currentRound > maxRounds) {
-        overlay.innerText = "Game over!";
-        overlay.style.display = "block";
-        return;
-      }
+  document.body.appendChild(resultDiv);
 
-      const remaining = allCards.filter(c => !usedCards.includes(c));
-      const selected = remaining[Math.floor(Math.random() * remaining.length)];
-      usedCards.push(selected);
+  setTimeout(() => {
+    resultDiv.remove();
+    document.querySelector(".voting-grid")?.remove();
+    flipCard();
+  }, 5000);
+}
 
-      const imagePath = `images/cards/${selected}`;
-      const rawText = cardTextMap[selected].text;
-      const isVotingCard = cardTextMap[selected].type === "voting";
-      const hasPlaceholders = rawText.includes("[player1]") || rawText.includes("[player2]");
-      const personalizedText = hasPlaceholders ? injectPlayerNames(rawText) : rawText;
+function leaveGame() {
+  window.location.href = "index.html";
+}
 
-      document.getElementById("cardImage").src = imagePath;
-      document.getElementById("roundDisplay").innerText = `Round ${currentRound} of ${maxRounds}`;
+function startNewGame() {
+  window.location.href = "game-setup.html";
+}
 
-      overlay.innerHTML = personalizedText;
-      overlay.style.display = "block";
-
-      if (isVotingCard && playerNames.length > 0) {
-        showVotingGrid();
-      }
-    }
-
-    function injectPlayerNames(text) {
-      if (playerNames.length === 0) return text;
-      const p1 = playerNames[Math.floor(Math.random() * playerNames.length)];
-      let p2 = p1;
-      while (playerNames.length > 1 && p2 === p1) {
-        p2 = playerNames[Math.floor(Math.random() * playerNames.length)];
-      }
-      return text.replaceAll("[player1]", p1).replaceAll("[player2]", p2);
-    }
-
-    function showVotingGrid() {
-      const container = document.createElement("div");
-      container.classList.add("voting-grid");
-
-      const voteCounts = {};
-      playerNames.forEach(name => voteCounts[name] = 0);
-      let hasVoted = false;
-
-      playerNames.forEach(player => {
-        const btn = document.createElement("button");
-        btn.textContent = player;
-        btn.onclick = () => {
-          if (hasVoted) return;
-          hasVoted = true;
-          voteCounts[player]++;
-          displayVoteResults(voteCounts);
-        };
-        container.appendChild(btn);
-      });
-
-      document.body.appendChild(container);
-    }
-
-    function displayVoteResults(voteCounts) {
-      const resultDiv = document.createElement("div");
-      resultDiv.className = "vote-results";
-
-      const entries = Object.entries(voteCounts);
-      const max = Math.max(...entries.map(([_, c]) => c));
-      const winners = entries.filter(([_, c]) => c === max).map(([n]) => n);
-
-      entries.forEach(([name, count]) => {
-        const p = document.createElement("p");
-        p.innerText = `${name}: ${count} vote${count !== 1 ? 's' : ''}`;
-        resultDiv.appendChild(p);
-      });
-
-      const winText = document.createElement("div");
-      winText.className = "winner";
-      winText.innerText = `🏆 Winner: ${winners.join(" & ")}`;
-      resultDiv.appendChild(winText);
-
-      document.body.appendChild(resultDiv);
-
-      setTimeout(() => {
-        resultDiv.remove();
-        document.querySelector(".voting-grid")?.remove();
-        flipCard();
-      }, 5000);
-    }
-
-    function leaveGame() {
-      window.location.href = "index.html";
-    }
-
-    function startNewGame() {
-      window.location.href = "game-setup.html";
-    }
-
-    window.onload = showCard;
-  </script>
+window.onload = showCard;
+</script>
 </body>
 </html>
-#made by Chambers

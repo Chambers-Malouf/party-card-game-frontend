@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Choose Game Mode</title>
+  <title>Game Setup - Chambers Drinking Game</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     body {
@@ -13,7 +12,7 @@
       animation: gradientShift 15s ease infinite;
       color: white;
       text-align: center;
-      padding-top: 100px;
+      padding: 40px;
     }
 
     @keyframes gradientShift {
@@ -22,69 +21,70 @@
       100% { background-position: 0% 50%; }
     }
 
-    h1 {
-      font-size: 16px;
-      margin-bottom: 40px;
-      text-shadow: 2px 2px 4px black;
-    }
-
-    select, input {
+    select, input, button {
       font-family: 'Press Start 2P', cursive;
-      font-size: 10px;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #fff;
       margin: 10px;
-      width: 240px;
-      text-align: center;
-    }
-
-    .button {
-      font-family: 'Press Start 2P', cursive;
-      font-size: 10px;
-      padding: 12px 24px;
-      background-color: #8b00c9;
-      border: none;
+      padding: 10px;
+      font-size: 0.6em;
       border-radius: 10px;
-      box-shadow: 0 0 12px #8b00c9;
+      border: none;
+      background-color: #4b004f;
       color: white;
-      cursor: pointer;
-      margin-top: 30px;
-      transition: 0.2s ease;
+      box-shadow: 0 0 10px #4b004f;
     }
 
-    .button:hover {
+    button:hover {
       background-color: #b400ff;
       box-shadow: 0 0 25px #b400ff, 0 0 45px #b400ff;
+      cursor: pointer;
+    }
+
+    h2 {
+      font-size: 0.9em;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
-  <h1>Choose Game Mode</h1>
 
-  <div>
+  <h1>Select Game Settings</h1>
+
+  <form id="setupForm">
+    <h2>Choose Card Category</h2>
     <select id="modeSelect">
-      <option value="party">Party Mode</option>
-      <option value="drama">Drama Mode</option>
+      <option value="party">Party</option>
+      <option value="nsfw">NSFW</option>
       <option value="truthordrink">Truth or Drink</option>
+      <option value="chill">Chill</option>
+      <option value="drama">Drama</option>
+      <option value="all">All Cards</option>
     </select>
-  </div>
 
-  <div>
-    <input type="number" id="roundInput" placeholder="Number of Rounds" min="1" max="50" />
-  </div>
+    <h2>Choose Game Mode</h2>
+    <select id="gameModeSelect">
+      <option value="classic">Classic</option>
+      <option value="voting">Majority Rules</option>
+      <option value="versus">Versus</option>
+      <option value="chaos">Ultimate Chaos</option>
+      <option value="teams">Team Battle</option>
+    </select>
 
-  <div>
-    <button class="button" onclick="startGame()">Start Game</button>
-  </div>
+    <h2>Number of Rounds</h2>
+    <input type="number" id="rounds" min="1" max="50" value="10" />
+
+    <br />
+    <button type="submit">Start Game</button>
+  </form>
 
   <script>
-    function startGame() {
+    document.getElementById("setupForm").addEventListener("submit", function (e) {
+      e.preventDefault();
       const mode = document.getElementById("modeSelect").value;
-      const rounds = document.getElementById("roundInput").value || 10;
-      window.location.href = `game.html?mode=${mode}&rounds=${rounds}`;
-    }
+      const gameMode = document.getElementById("gameModeSelect").value;
+      const rounds = document.getElementById("rounds").value;
+      window.location.href = `game.html?mode=${mode}&gamemode=${gameMode}&rounds=${rounds}`;
+    });
   </script>
+
 </body>
 </html>
